@@ -119,7 +119,7 @@ feature -- Subs Systems
 		end
 
 	enable_joystick
-			-- Unable the joystick functionality
+			-- Enable the joystick functionality
 		require
 			SDL_Controller_Enable_Joystick_Already_Enabled: not is_joystick_enable
 		do

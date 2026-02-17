@@ -1751,6 +1751,84 @@ feature -- Function SDL.h
 		alias
 			"SDL_GetPrefPath"
 		end
+-- Ma section sur les manettes de jeuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
+-- Marqueur d'emplemennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnt
+	frozen SDL_OpenGamepad(instance_id: INTEGER):POINTER
+		external
+			"C (SDL_JoystickID) : SDL_Gamepad * | <SDL.h>"
+		alias
+			"SDL_OpenGamepad"
+		end
+
+	frozen SDL_CloseGamepad(gamepad: POINTER)
+		external
+			"C (SDL_Gamepad *) | <SDL.h>"
+		alias
+			"SDL_CloseGamepad"
+		end
+
+	frozen SDL_GamepadConnected(gamepad: POINTER):BOOLEAN
+		external
+			"C (SDL_Gamepad *) : bool"
+		alias
+			"SDL_GamepadConnected"
+		end
+
+	frozen SDL_GetGamepadButton(gamepad:POINTER; button: INTEGER):BOOLEAN
+		external--techniquement le bouton est un ENUM dans la librairie
+			"C (SDL_Gamepad *, SDL_GamepadButton) : bool | <SDL.h>"
+		alias
+			"SDL_GetGamepad"
+		end
+
+	frozen SDL_GetGamepadButtonLabel(gamepad: POINTER; button: INTEGER):STRING
+		external-- encore un ENUM
+			"C (SDL_Gamepad *, SDL_GamepadButton) : SDL_GamepadButtonLabel | <SDL.h>"
+		alias
+			"SDL_GetGamepadButtonLabel"
+		end
+
+	frozen SDL_GetGamepadJoystick(gamepad: POINTER):POINTER
+		external
+			"C (SDL_Gamepad *) : SDL_Joystck * | <SDL.h>"
+		alias
+			"SDL_GetGamepadJoystick"
+		end
+
+	frozen SDL_HasGamepad: BOOLEAN
+		external
+			"C : bool | <SDL.h>"
+		alias
+			"SDL_HasGamepad"
+		end
+
+	frozen SDL_IsGamepad(instance_id: INTEGER): BOOLEAN
+		external
+			"C (SDL_JoystickID) : bool | <SDL.h>"
+		alias
+			"SDL_IsGamepad"
+		end
+
+	frozen SDL_GetGamepadMapping(gamepad: POINTER):POINTER
+		external
+			"C (SDL_Gamepad *) : char * | <SDL.h>"
+		alias
+			"SDL_GetGamepadMapping"
+		end
+
+	frozen SDL_SetGamepadMapping(instance_id: INTEGER; mapping: POINTER):BOOLEAN
+		external
+			"C (SDL_JoystickID, const char *) : bool | <SDL.h>"
+		alias
+			"SDL_SetGamepad_Mapping"
+		end
+
+	frozen SDL_UpdateGamepad()
+		external
+			"C | <SDL.h>"
+		alias
+			"SDL_UpdateGamepad"
+		end
 
 feature -- Manual C function (implemented in sdl_additions.c)
 
