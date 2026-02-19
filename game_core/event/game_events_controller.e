@@ -234,6 +234,9 @@ feature -- Access
 	joy_device_removed_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32;joystick_id:INTEGER_32]]
 			-- When a new joystick device identified by `joystick_id' has been removed.
 
+	gamepad_button_pressed_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; gamepad_id: READABLE_STRING_GENERAL; button_id:NATURAL_8]]
+		
+
 	finger_motion_actions: ACTION_SEQUENCE[TUPLE[	timestamp:NATURAL_32;touch_id, finger_id:INTEGER_64;
 												x, y, x_relative, y_relative, pressure:REAL_32]]
 			-- When a finger identified by `finger_id' in the touch device identified by
@@ -1526,6 +1529,13 @@ feature {NONE} -- Implementation
 				joy_device_removed_actions.call ({GAME_SDL_EXTERNAL}.get_joy_device_event_struct_timestamp (item),
 												 {GAME_SDL_EXTERNAL}.get_joy_device_event_struct_which (item))
 			end
+		elseif l_event_type = {GAME_SDL_EXTERNAL}.sdl_controllerbuttondown then
+			if not gamepad_button_pressed_actions.is_empty then
+				gamepad_button_pressed_actions.call ({GAME_SDL_EXTERNAL}.get_controller_button_event_struct_timestamp (item),
+												 {GAME_SDL_EXTERNAL}.get_controller_button_event_struct_which (item),
+												 {GAME_SDL_EXTERNAL}.get_controller_button_event_struct_button (item))
+			end
+
 		elseif l_event_type = {GAME_SDL_EXTERNAL}.sdl_multigesture then
 			if not fingers_gesture_actions.is_empty then
 				fingers_gesture_actions.call ({GAME_SDL_EXTERNAL}.get_multi_gesture_event_struct_timestamp (item),

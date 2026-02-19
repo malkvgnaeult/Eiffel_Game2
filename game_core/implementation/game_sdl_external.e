@@ -1830,6 +1830,13 @@ feature -- Function SDL.h
 			"SDL_UpdateGamepad"
 		end
 
+	frozen SDL_GetGamepadGuidForID(instance_id: INTEGER): READABLE_STRING_GENERAL
+		external
+			"C (SDL_JoystickID) : SDL_GUID | <SDL.h>"
+		alias
+			"SDL_GetGamepadGuidForID"
+		end
+
 feature -- Manual C function (implemented in sdl_additions.c)
 
 	frozen setSDLRWops(rwop,cpf_infos:POINTER)
