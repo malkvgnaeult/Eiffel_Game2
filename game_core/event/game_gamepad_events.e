@@ -27,13 +27,20 @@ feature -- Access
 		-- <Precursor>
 		do
 			is_running := False
-			events_controller
+			events_controller.gamepad_button_pressed_actions.prune_all (button_pressed_events_callback)
+			events_controller.gamepad_button_released_actions.prune_all (button_released_events_callback)
 		end
 
 	run
 			-- <Precursor>
 		do
-
+			is_running := true
+			if attached button_pressed_actions_internal then
+				events_controller.gamepad_button_pressed_actions.extend (button_pressed_events_callback)
+			end
+			if attached button_released_actions_internal then
+				events_controller.gamepad_button_released_actions.extend (button_released_events_callback)
+			end
 		end
 
 	clear
@@ -50,6 +57,51 @@ feature -- Access
 			removed_actions_internal := Void
 			if l_was_running then
 				run
+			end
+		end
+
+	button_pressed_actions: ACTION_SEQUENCE [TUPLE [timestamp: NATURAL_32; button_id:NATURAL_8]]
+			-- When a button (identified by `button_id') of `Current' has been pressed.
+		require
+			Gamepad_Button_Pressed_Event_Enable: events_controller.is_gamepad_button_pressed_event_enable
+		do
+			if attached button_pressed_actions_internal as la_button_pressed_actions_internal then
+				Result := la_button_pressed_actions_internal
+			else
+				create Result
+				if is_running and not events_controller.gamepad_button_pressed_actions.has (button_pressed_events_callback) then
+					events_controller.gamepad_button_pressed_actions.extend (button_pressed_events_callback)
+				end
+				button_pressed_actions_internal := Result
+			end
+		end
+
+	button_released_actions: ACTION_SEQUENCE [TUPLE [timestamp: NATURAL_32; button_id:NATURAL_8]]
+			-- When a button (identified by `button_id') of `Current' has been released.
+		require
+			Gamepad_Button_Pressed_Event_Enable: events_controller.is_gamepad_button_released_event_enable
+		do
+			if attached button_released_actions_internal as la_button_released_actions_internal then
+				Result := la_button_released_actions_internal
+			else
+				create Result
+				if is_running and not events_controller.gamepad_button_released_actions.has (button_released_events_callback) then
+					events_controller.gamepad_button_released_actions.extend (button_released_events_callback)
+				end
+				button_released_actions_internal := Result
+			end
+		end
+
+	removed_actions: ACTION_SEQUENCE [TUPLE [timestamp: NATURAL_32]]
+			-- When `Current' is removed (probably disconected)
+		require
+			Gamepad_Button_Pressed_Event_Enable: events_controller.is_gamepad_device_removed_event_enable
+		do
+			if attached removed_actions_internal as la_removed_actions_internal then
+				Result := la_removed_actions_internal
+			else
+				create Result
+				removed_actions_internal := Result
 			end
 		end
 

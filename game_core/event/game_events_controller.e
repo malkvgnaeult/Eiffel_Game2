@@ -41,6 +41,8 @@ feature {NONE} -- Initialization
 			create clear_actions
 			create joy_device_founded_actions
 			create joy_device_removed_actions
+			create gamepad_device_founded_actions
+			create gamepad_device_removed_actions
 		end
 
 	initialize_actions
@@ -63,6 +65,8 @@ feature {NONE} -- Initialization
 			create joy_hat_motion_actions
 			create joy_button_released_actions
 			create joy_button_pressed_actions
+			create gamepad_button_pressed_actions
+			create gamepad_button_released_actions
 			create finger_motion_actions
 			create finger_released_actions
 			create finger_touched_actions
@@ -229,13 +233,22 @@ feature -- Access
 			-- been released.
 
 	joy_device_founded_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32;joystick_id:INTEGER_32]]
-			-- When a new joystick device identified by `joystick_id' has been founded.
+			-- When a new joystick device identified by `joystick_id' has been found.
 
 	joy_device_removed_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32;joystick_id:INTEGER_32]]
 			-- When a new joystick device identified by `joystick_id' has been removed.
 
-	gamepad_button_pressed_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; gamepad_id: READABLE_STRING_GENERAL; button_id:NATURAL_8]]
-		
+	gamepad_button_pressed_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; joystick_id: INTEGER_32; button_id:NATURAL_8]]
+		-- When the button identified by 'button_id' of the gamepad identified by 'joystick_id' has been pressed
+
+	gamepad_button_released_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; joystick_id: INTEGER_32; button_id:NATURAL_8]]
+		-- When the button identified by 'button_id' of the gamepad identified by 'joystick_id' has been released
+
+	gamepad_device_founded_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; joystick_id: INTEGER_32]]
+		-- When a new gamepad device identified by `joystick_id' has been found.
+
+	gamepad_device_removed_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32;joystick_id: INTEGER_32]]
+			-- When a new joystick device identified by `joystick_id' has been removed.
 
 	finger_motion_actions: ACTION_SEQUENCE[TUPLE[	timestamp:NATURAL_32;touch_id, finger_id:INTEGER_64;
 												x, y, x_relative, y_relative, pressure:REAL_32]]
@@ -1054,6 +1067,190 @@ feature -- Access
 			Is_Assign: is_any_joy_event_enable ~ a_value
 		end
 
+	enable_gamepad_button_pressed_event
+			-- Process the `joy_button_pressed_actions' event.
+			-- Enabled by default
+		local
+			l_error:NATURAL_8
+		do
+			l_error := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerbuttondown, {GAME_SDL_EXTERNAL}.sdl_enable)
+			check l_error = {GAME_SDL_EXTERNAL}.sdl_enable end
+		ensure
+			Is_Event_Enabled: is_gamepad_button_pressed_event_enable
+		end
+
+	disable_gamepad_button_pressed_event
+			-- Ignore the `gamepad_button_pressed_actions' event.
+			-- Enabled by default
+		local
+			l_error:NATURAL_8
+		do
+			l_error := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerbuttondown, {GAME_SDL_EXTERNAL}.sdl_disable)
+			check l_error = {GAME_SDL_EXTERNAL}.sdl_disable end
+		ensure
+			Is_Event_Disabled: not is_gamepad_button_pressed_event_enable
+		end
+
+	is_gamepad_button_pressed_event_enable:BOOLEAN assign set_is_gamepad_button_pressed_event_enable
+			-- If the `gamepad_button_pressed_actions' event has to be processed.
+			-- Enabled by default
+		local
+			l_query:NATURAL_8
+		do
+			l_query := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerbuttondown, {GAME_SDL_EXTERNAL}.sdl_query)
+			Result := l_query = {GAME_SDL_EXTERNAL}.sdl_enable
+		end
+
+	set_is_gamepad_button_pressed_event_enable(a_value:BOOLEAN)
+			-- Assign to `is_gamepad_button_pressed_event_enable' the value of `a_value'
+		do
+			if a_value then
+				enable_gamepad_button_pressed_event
+			else
+				disable_gamepad_button_pressed_event
+			end
+		ensure
+			Is_Assign: is_gamepad_button_pressed_event_enable ~ a_value
+		end
+
+	enable_gamepad_button_released_event
+			-- Process the `gamepad_button_released_actions' event.
+			-- Enabled by default
+		local
+			l_error:NATURAL_8
+		do
+			l_error := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerbuttonup, {GAME_SDL_EXTERNAL}.sdl_enable)
+			check l_error = {GAME_SDL_EXTERNAL}.sdl_enable end
+		ensure
+			Is_Event_Enabled: is_gamepad_button_released_event_enable
+		end
+
+	disable_gamepad_button_released_event
+			-- Ignore the `gamepad_button_released_actions' event.
+			-- Enabled by default
+		local
+			l_error:NATURAL_8
+		do
+			l_error := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerbuttonup, {GAME_SDL_EXTERNAL}.sdl_disable)
+			check l_error = {GAME_SDL_EXTERNAL}.sdl_disable end
+		ensure
+			Is_Event_Disabled: not is_gamepad_button_released_event_enable
+		end
+
+	is_gamepad_button_released_event_enable:BOOLEAN assign set_is_gamepad_button_released_event_enable
+			-- Is the `gamepad_button_released_actions' event has to be process.
+			-- Enabled by default
+		local
+			l_query:NATURAL_8
+		do
+			l_query := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerbuttonup, {GAME_SDL_EXTERNAL}.sdl_query)
+			Result := l_query = {GAME_SDL_EXTERNAL}.sdl_enable
+		end
+
+	set_is_gamepad_button_released_event_enable(a_value:BOOLEAN)
+			-- Assign to `is_gamepad_button_released_event_enable' the value of `a_value'
+		do
+			if a_value then
+				enable_gamepad_button_released_event
+			else
+				disable_gamepad_button_released_event
+			end
+		ensure
+			Is_Assign: is_gamepad_button_released_event_enable ~ a_value
+		end
+
+	enable_gamepad_device_founded_event
+			-- Process the `gamepad_device_founded_actions' event.
+			-- Enabled by default
+		local
+			l_error:NATURAL_8
+		do
+			l_error := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerdeviceadded, {GAME_SDL_EXTERNAL}.sdl_enable)
+			check l_error = {GAME_SDL_EXTERNAL}.sdl_enable end
+		ensure
+			Is_Event_Enabled: is_gamepad_device_founded_event_enable
+		end
+
+	disable_gamepad_device_founded_event
+			-- Ignore the `gamepad_device_founded_actions' event.
+			-- Enabled by default
+		local
+			l_error:NATURAL_8
+		do
+			l_error := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerdeviceadded, {GAME_SDL_EXTERNAL}.sdl_disable)
+			check l_error = {GAME_SDL_EXTERNAL}.sdl_disable end
+		ensure
+			Is_Event_Disabled: not is_gamepad_device_founded_event_enable
+		end
+
+	is_gamepad_device_founded_event_enable:BOOLEAN assign set_is_gamepad_device_founded_event_enable
+			-- Is the `gamepad_device_founded_actions' event has to be process.
+			-- Enabled by default
+		local
+			l_query:NATURAL_8
+		do
+			l_query := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerdeviceadded, {GAME_SDL_EXTERNAL}.sdl_query)
+			Result := l_query = {GAME_SDL_EXTERNAL}.sdl_enable
+		end
+
+	set_is_gamepad_device_founded_event_enable(a_value:BOOLEAN)
+			-- Assign to `is_gamepad_device_founded_event_enable' the value of `a_value'
+		do
+			if a_value then
+				enable_gamepad_device_founded_event
+			else
+				disable_gamepad_device_founded_event
+			end
+		ensure
+			Is_Assign: is_gamepad_device_founded_event_enable ~ a_value
+		end
+
+	enable_gamepad_device_removed_event
+			-- Process the `gamepad_device_removed_actions' event.
+			-- Enabled by default
+		local
+			l_error:NATURAL_8
+		do
+			l_error := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerdeviceremoved, {GAME_SDL_EXTERNAL}.sdl_enable)
+			check l_error = {GAME_SDL_EXTERNAL}.sdl_enable end
+		ensure
+			Is_Event_Enabled: is_gamepad_device_removed_event_enable
+		end
+
+	disable_gamepad_device_removed_event
+			-- Ignore the `gamepad_device_removed_actions' event.
+			-- Enabled by default
+		local
+			l_error:NATURAL_8
+		do
+			l_error := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerdeviceremoved, {GAME_SDL_EXTERNAL}.sdl_disable)
+			check l_error = {GAME_SDL_EXTERNAL}.sdl_disable end
+		ensure
+			Is_Event_Disabled: not is_gamepad_device_removed_event_enable
+		end
+
+	is_gamepad_device_removed_event_enable:BOOLEAN assign set_is_gamepad_device_removed_event_enable
+			-- Is the `gamepad_device_removed_actions' event has to be process.
+			-- Enabled by default
+		local
+			l_query:NATURAL_8
+		do
+			l_query := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerdeviceremoved, {GAME_SDL_EXTERNAL}.sdl_query)
+			Result := l_query = {GAME_SDL_EXTERNAL}.sdl_enable
+		end
+
+	set_is_gamepad_device_removed_event_enable(a_value:BOOLEAN)
+			-- Assign to `is_gamepad_device_removed_event_enable' the value of `a_value'
+		do
+			if a_value then
+				enable_gamepad_device_removed_event
+			else
+				disable_gamepad_device_removed_event
+			end
+		ensure
+			Is_Assign: is_gamepad_device_removed_event_enable ~ a_value
+		end
+
 	enable_finger_touched_event
 			-- Process the `finger_touched_actions' event.
 			-- Enabled by default
@@ -1535,7 +1732,22 @@ feature {NONE} -- Implementation
 												 {GAME_SDL_EXTERNAL}.get_controller_button_event_struct_which (item),
 												 {GAME_SDL_EXTERNAL}.get_controller_button_event_struct_button (item))
 			end
-
+		elseif l_event_type = {GAME_SDL_EXTERNAL}.sdl_controllerbuttonup then
+			if not gamepad_button_released_actions.is_empty then
+				gamepad_button_released_actions.call ({GAME_SDL_EXTERNAL}.get_controller_button_event_struct_timestamp (item),
+												 {GAME_SDL_EXTERNAL}.get_controller_button_event_struct_which (item),
+												 {GAME_SDL_EXTERNAL}.get_controller_button_event_struct_button (item))
+			end
+		elseif l_event_type = {GAME_SDL_EXTERNAL}.sdl_controllerdeviceadded then
+			if not gamepad_device_founded_actions.is_empty then
+				gamepad_device_founded_actions.call ({GAME_SDL_EXTERNAL}.get_controller_button_event_struct_timestamp (item),
+												 {GAME_SDL_EXTERNAL}.get_controller_button_event_struct_which (item))
+			end
+		elseif l_event_type = {GAME_SDL_EXTERNAL}.sdl_controllerdeviceremoved then
+			if not gamepad_device_removed_actions.is_empty then
+				gamepad_device_removed_actions.call ({GAME_SDL_EXTERNAL}.get_controller_button_event_struct_timestamp (item),
+												 {GAME_SDL_EXTERNAL}.get_controller_button_event_struct_which (item))
+			end
 		elseif l_event_type = {GAME_SDL_EXTERNAL}.sdl_multigesture then
 			if not fingers_gesture_actions.is_empty then
 				fingers_gesture_actions.call ({GAME_SDL_EXTERNAL}.get_multi_gesture_event_struct_timestamp (item),
