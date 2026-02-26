@@ -26,6 +26,7 @@ feature {NONE} -- Initialisation
 				do
 					button_released_events_dispatcher(a_timestamp, a_gamepad_id, a_button_id)
 				end
+			Precursor {GAME_EVENTS}
 		end
 
 feature -- Access

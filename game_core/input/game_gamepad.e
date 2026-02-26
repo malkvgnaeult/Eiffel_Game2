@@ -18,12 +18,12 @@ inherit
 			is_running as is_events_running,
 			clear as clear_events
 		end
-
-create {GAME_LIBRARY_CONTROLLER}
+ --{GAME_LIBRARY_CONTROLLER}
+create
 	make
 
-feature {NONE} -- Initialization
-
+feature  -- Initialization
+--{NONE}
 	make(a_joystick_id:INTEGER_32)
 			-- Initialization for `Current' using `a_open_index' when `open'.
 		do
@@ -143,7 +143,8 @@ feature {GAME_SDL_ANY} -- Implementation
 	joystick_id: INTEGER_32
 				-- joysticks of the gamepad
 
-feature {GAME_LIBRARY_CONTROLLER} -- Implementation
+feature  -- Implementation
+--{GAME_LIBRARY_CONTROLLER}
 
 	open_index:INTEGER assign set_open_index
 		-- The internal 'index' used by 'open'

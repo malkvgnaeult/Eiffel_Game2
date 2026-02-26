@@ -207,6 +207,25 @@ feature -- Subs Systems
 			Is_Assign: is_gamepad_enable~ a_value
 		end
 
+	findController
+			--Finds controller
+		local
+			l_gamepad: GAME_GAMEPAD
+			i: INTEGER_32
+		do
+			from
+   				 i := 0
+			until
+  				  i >= {GAME_SDL_EXTERNAL}.sdl_numjoysticks
+			loop
+  				  if {GAME_SDL_EXTERNAL}.sdl_isgamecontroller (i) then
+  				  		create l_gamepad.make(i)
+  				  		internal_gamepads.extend (l_gamepad)
+  				  end
+   				 i := i + 1
+			end
+		end
+
 	enable_haptic
 			-- Unable the haptic (force feedback) functionality.
 			-- Often use for Controller rumble.
@@ -645,7 +664,7 @@ feature -- Gamepad methods
 			{GAME_SDL_EXTERNAL}.sdl_gamecontrollerupdate
 		end
 
-feature {NONE} -- Gamepad Implementations
+feature --{NONE} -- Gamepad Implementations
 
 	internal_gamepads:ARRAYED_LIST[detachable GAME_GAMEPAD]
 			-- Every {GAME_GAMEPAD} connected to the system.
