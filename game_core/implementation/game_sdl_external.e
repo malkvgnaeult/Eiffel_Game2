@@ -1751,91 +1751,118 @@ feature -- Function SDL.h
 		alias
 			"SDL_GetPrefPath"
 		end
--- Ma section sur les manettes de jeuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
--- Marqueur d'emplemennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnt
-	frozen SDL_OpenGamepad(instance_id: INTEGER):POINTER
+
+	frozen SDL_GameControllerOpen(joystick_index: INTEGER_32):POINTER
 		external
-			"C (SDL_JoystickID) : SDL_Gamepad * | <SDL.h>"
+			"C (int) : SDL_GameController* | <SDL.h>"
 		alias
-			"SDL_OpenGamepad"
+			"SDL_GameControllerOpen"
 		end
 
-	frozen SDL_CloseGamepad(gamepad: POINTER)
+	frozen SDL_GameControllerClose(gamepad: POINTER)
 		external
-			"C (SDL_Gamepad *) | <SDL.h>"
+			"C (SDL_GameController*) | <SDL.h>"
 		alias
-			"SDL_CloseGamepad"
+			"SDL_GameControllerClose"
 		end
 
-	frozen SDL_GamepadConnected(gamepad: POINTER):BOOLEAN
+	frozen SDL_GameControllerGetAttached(gamepad: POINTER):BOOLEAN
 		external
-			"C (SDL_Gamepad *) : bool"
+			"C (SDL_GameController*) : SDL_TRUE | <SDL.h>"
 		alias
-			"SDL_GamepadConnected"
+			"SDL_GameControllerGetAttached"
 		end
 
-	frozen SDL_GetGamepadButton(gamepad:POINTER; button: INTEGER):BOOLEAN
-		external--techniquement le bouton est un ENUM dans la librairie
-			"C (SDL_Gamepad *, SDL_GamepadButton) : bool | <SDL.h>"
-		alias
-			"SDL_GetGamepad"
-		end
-
-	frozen SDL_GetGamepadButtonLabel(gamepad: POINTER; button: INTEGER):STRING
-		external-- encore un ENUM
-			"C (SDL_Gamepad *, SDL_GamepadButton) : SDL_GamepadButtonLabel | <SDL.h>"
-		alias
-			"SDL_GetGamepadButtonLabel"
-		end
-
-	frozen SDL_GetGamepadJoystick(gamepad: POINTER):POINTER
+	frozen SDL_GameControllerGetButton(gamepad:POINTER; button: INTEGER_32):BOOLEAN
 		external
-			"C (SDL_Gamepad *) : SDL_Joystck * | <SDL.h>"
+			"C (SDL_GameController*, SDL_GameControllerButton) : Uint8 | <SDL.h>"
 		alias
-			"SDL_GetGamepadJoystick"
+			"SDL_GameControllerGetButton"
 		end
 
-	frozen SDL_HasGamepad: BOOLEAN
+	frozen SDL_GameControllerGetStringForButton(button: INTEGER_32):POINTER
 		external
-			"C : bool | <SDL.h>"
+			"C ( SDL_GameControllerButton) : const char* | <SDL.h>"
 		alias
-			"SDL_HasGamepad"
+			"SDL_GameControllerGetStringForButton"
 		end
 
-	frozen SDL_IsGamepad(instance_id: INTEGER): BOOLEAN
+	frozen SDL_GameControllerGetJoystick(gamepad: POINTER):POINTER
+		external
+			"C (SDL_GameController*) : SDL_Joystick* | <SDL.h>"
+		alias
+			"SDL_GameControllerGetJoystick"
+		end
+
+--	frozen SDL_GameControllerHasButton(gamecontroller: POINTER; button: INTEGER_32): BOOLEAN
+--		external
+--			"C (SDL_GameController*, SDL_GameControllerButton) : SDL_bool | <SDL.h>"
+--		alias
+--			"SDL_GameControllerHasButton"
+--		end
+
+	frozen SDL_IsGameController(joystick_index: INTEGER_32): BOOLEAN
 		external
 			"C (SDL_JoystickID) : bool | <SDL.h>"
 		alias
-			"SDL_IsGamepad"
+			"SDL_IsGameController"
 		end
 
-	frozen SDL_GetGamepadMapping(gamepad: POINTER):POINTER
+	frozen SDL_GameControllerMapping(gamepad: POINTER):POINTER
 		external
-			"C (SDL_Gamepad *) : char * | <SDL.h>"
+			"C (SDL_GameController*) : char* | <SDL.h>"
 		alias
-			"SDL_GetGamepadMapping"
+			"SDL_GameControllerMapping"
 		end
 
-	frozen SDL_SetGamepadMapping(instance_id: INTEGER; mapping: POINTER):BOOLEAN
-		external
-			"C (SDL_JoystickID, const char *) : bool | <SDL.h>"
-		alias
-			"SDL_SetGamepad_Mapping"
-		end
+--	frozen SDL_SetGamepadMapping(instance_id: INTEGER_32; mapping: POINTER):BOOLEAN
+--		external
+--			"C (SDL_JoystickID, const char*) : bool | <SDL.h>"
+--		alias
+--			"SDL_SetGamepadMapping"
+--		end
 
-	frozen SDL_UpdateGamepad()
+	frozen SDL_GameControllerUpdate()
 		external
 			"C | <SDL.h>"
 		alias
-			"SDL_UpdateGamepad"
+			"SDL_GameControllerUpdate"
 		end
 
-	frozen SDL_GetGamepadGuidForID(instance_id: INTEGER): READABLE_STRING_GENERAL
+--	frozen SDL_GetGamepadGuidForID(instance_id: INTEGER_32): READABLE_STRING_GENERAL
+--		external
+--			"C (SDL_JoystickID) : SDL_GUID | <SDL.h>"
+--		alias
+--			"SDL_GetGamepadGuidForID"
+--		end
+
+	frozen SDL_GameControllerName(gamepad: POINTER): POINTER
 		external
-			"C (SDL_JoystickID) : SDL_GUID | <SDL.h>"
+			"C (SDL_GameController*) : const char* | <SDL.h>"
 		alias
-			"SDL_GetGamepadGuidForID"
+			"SDL_GameControllerName"
 		end
+
+	frozen SDL_GameControllerNameForIndex(joystick_index: INTEGER_32): POINTER
+		external
+			"C (int) : const char* | <SDL.h>"
+		alias
+			"SDL_GameControllerNameForIndex"
+		end
+
+	frozen SDL_GameControllerEventState(state: INTEGER): INTEGER
+		external
+			"C (int) : int | <SDL.h>"
+		alias
+			"SDL_GameControllerEventState"
+		end
+
+--	frozen SDL_GetGamepadID(gamepad:POINTER): INTEGER_32
+--		external
+--			"C (SDL_GameController*) : SDL_JoystickID | <SDL.h>"
+--		alias
+--			"SDL_GetGamepadID"
+--		end
 
 feature -- Manual C function (implemented in sdl_additions.c)
 

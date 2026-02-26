@@ -36,6 +36,12 @@ feature {NONE} -- Initialisation
 			iteration_actions_callback:=agent (a_timestamp:NATURAL_32) do
 										iteration_actions.call ([a_timestamp])
 									end
+			gamepad_founded_actions_callback := agent (a_timestamp:NATURAL_32; a_gamepad_id:INTEGER_32)	do
+												manage_gamepad_founded_callback(a_timestamp, a_gamepad_id)
+									end
+			gamepad_removed_actions_callback := agent (a_timestamp:NATURAL_32; a_gamepad_id:INTEGER_32) do
+												manage_gamepad_removed_callback(a_timestamp, a_gamepad_id)
+									end
 			Precursor{GAME_EVENTS}
 		end
 
@@ -80,6 +86,8 @@ feature -- Access
 			iteration_actions_internal := Void
 			joystick_found_actions_internal := Void
 			joystick_remove_actions_internal := Void
+			gamepad_found_actions_internal := Void
+			gamepad_remove_actions_internal := Void
 			file_dropped_actions_internal := Void
 			if l_was_running then
 				run
@@ -151,6 +159,41 @@ feature -- Access
 			end
 		end
 
+	gamepad_found_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; gamepad:GAME_GAMEPAD]]
+			-- Called when a new `gamepad' has been found
+			-- Automatically added to {GAME_LIBRARY_CONTROLLER}.`gamepads'
+		require
+			Gamepad_Found_Event_Enabled: events_controller.is_gamepad_device_founded_event_enable
+		do
+			if attached gamepad_found_actions_internal as la_on_gamepad_added_internal then
+				Result := la_on_gamepad_added_internal
+			else
+				create Result
+				if is_running then
+					events_controller.gamepad_device_founded_actions.extend (gamepad_founded_actions_callback)
+				end
+				gamepad_found_actions_internal := Result
+			end
+		end
+
+	gamepad_remove_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; gamepad:GAME_GAMEPAD]]
+			-- Called when a new gamepad has been removed
+			-- The gamepad will be removed from {GAME_LIBRARY_CONTROLLER}.`gamepads' after the
+			-- calls of this feature.
+		require
+			Gamepad_Remove_Event_Enabled: events_controller.is_gamepad_device_removed_event_enable
+		do
+			if attached gamepad_remove_actions_internal as la_on_gamepad_removed_internal then
+				Result := la_on_gamepad_removed_internal
+			else
+				create Result
+				if is_running then
+					events_controller.gamepad_device_removed_actions.extend (gamepad_removed_actions_callback)
+				end
+				gamepad_remove_actions_internal := Result
+			end
+		end
+
 	file_dropped_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32;filename:READABLE_STRING_GENERAL]]
 			-- Called when the file (or any other string) `filename' is drag and drop on a {GAME_WINDOW}.
 			-- The event is not enabled by default. Use `events_controller'.`enable_file_dropped_event' to enable it.
@@ -180,6 +223,16 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
+	manage_gamepad_founded_callback(a_timestamp:NATURAL_32; a_gamepad_id:INTEGER_32)
+			-- Used to manage `gamepad_founded_actions_callback'
+		deferred
+		end
+
+	manage_gamepad_removed_callback(a_timestamp:NATURAL_32; a_gamepad_id:INTEGER_32)
+			-- Used to manage `gamepad_removed_actions_callback'
+		deferred
+		end
+
 	quit_signal_actions_internal: detachable ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32]]
 			-- Internal representation of the quit signal event
 
@@ -203,6 +256,18 @@ feature {NONE} -- Implementation
 
 	joystick_removed_actions_callback:PROCEDURE [ANY, TUPLE[timestamp:NATURAL_32;joystick_id:INTEGER_32]]
 			-- Internal callback of the joystick removed event
+
+	gamepad_found_actions_internal: detachable ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; gamepad:GAME_GAMEPAD]]
+			-- Internal representation of the gamepad founded event
+
+	gamepad_founded_actions_callback:PROCEDURE [ANY, TUPLE[timestamp:NATURAL_32;gamepad_id:INTEGER_32]]
+			-- Internal callback of the gamepad founded event
+
+	gamepad_remove_actions_internal: detachable ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; gamepad:GAME_GAMEPAD]]
+			-- Internal representation of the gamepad removed event
+
+	gamepad_removed_actions_callback:PROCEDURE [ANY, TUPLE[timestamp:NATURAL_32;gamepad_id:INTEGER_32]]
+			-- Internal callback of the gamepad removed event
 
 	file_dropped_actions_internal: detachable ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32;filename:READABLE_STRING_GENERAL]]
 			-- Internal representation of the file drop event

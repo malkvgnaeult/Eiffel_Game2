@@ -18,7 +18,14 @@ feature {NONE} -- Initialisation
 	make
 			-- initialization of 'Current'
 		do
-			--crée avec agent les events
+			button_pressed_events_callback := agent (a_timestamp: NATURAL_32; a_gamepad_id:INTEGER_32; a_button_id:NATURAL_8)
+				do
+					button_pressed_events_dispatcher(a_timestamp, a_gamepad_id, a_button_id)
+				end
+					button_released_events_callback := agent (a_timestamp: NATURAL_32; a_gamepad_id:INTEGER_32; a_button_id:NATURAL_8)
+				do
+					button_released_events_dispatcher(a_timestamp, a_gamepad_id, a_button_id)
+				end
 		end
 
 feature -- Access
@@ -133,7 +140,7 @@ feature {NONE} -- Implementation
 			-- Callback used to register `Current' in the `events_controller' for the
 			-- `button_released_actions' {ACTION_SEQUENCE}
 
-	button_released_events_dispatcher (a_timestamp: NATURAL_32; a_gamepad_id:READABLE_STRING_GENERAL; a_button_id:NATURAL_8)
+	button_released_events_dispatcher (a_timestamp: NATURAL_32; a_gamepad_id:INTEGER_32; a_button_id:NATURAL_8)
 			-- The dispatcher receiving event from the `button_released_events_callback' and dispatch them to
 			-- the `button_released_actions' {ACTION_SEQUENCE}
 		do
@@ -157,7 +164,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-	id: READABLE_STRING_GENERAL
+	id: INTEGER
 			-- Internal event identifier of `Current'
 		deferred
 		end

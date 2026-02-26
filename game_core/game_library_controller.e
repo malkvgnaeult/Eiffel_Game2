@@ -61,6 +61,7 @@ feature {NONE} -- Initialization
 			has_error:=False
 			set_iteration_per_second(60)
 			create internal_joysticks.make (0)
+			create internal_gamepads.make (0)
 			create internal_haptics.make(0)
 			l_error:={GAME_SDL_EXTERNAL}.SDL_Init(a_flags)
 			if l_error < 0 then
@@ -162,6 +163,49 @@ feature -- Subs Systems
 			Is_Assign: is_joystick_enable~ a_value
 		end
 
+	enable_gamepad
+			-- Enable the gamepad functionality
+		require
+			SDL_Controller_Enable_Gamepad_Already_Enabled: not is_gamepad_enable
+		do
+			initialise_sub_system({GAME_SDL_EXTERNAL}.sdl_init_gamecontroller)
+			events_controller.gamepad_device_founded_actions.extend (gamepad_founded_actions_callback)
+			events_controller.gamepad_device_removed_actions.extend (gamepad_removed_actions_callback)
+		ensure
+			SDL_Controller_Enable_Gamepad_Enabled: is_gamepad_enable
+		end
+
+	disable_gamepad
+			-- Disable the gamepad fonctionality
+		require
+			SDL_Controller_Disable_Gamepad_Not_Enabled: is_gamepad_enable
+		do
+			events_controller.gamepad_device_founded_actions.prune_all (gamepad_founded_actions_callback)
+			events_controller.gamepad_device_removed_actions.prune_all (gamepad_removed_actions_callback)
+			close_all_gamepads
+			internal_gamepads.wipe_out
+			quit_sub_system({GAME_SDL_EXTERNAL}.sdl_init_gamecontroller)
+		ensure
+			SDL_Controller_Disable_Gameback_Disabled: not is_gamepad_enable
+		end
+
+	is_gamepad_enable:BOOLEAN assign set_is_gamepad_enable
+			-- Return true if the gamepad functionnality is enabled.
+		do
+			Result:=is_sub_system_enable({GAME_SDL_EXTERNAL}.sdl_init_gamecontroller)
+		end
+
+	set_is_gamepad_enable(a_value:BOOLEAN)
+			-- Assign to `is_gamepad_enable' the value of `a_value'
+		do
+			if a_value then
+				enable_gamepad
+			else
+				disable_gamepad
+			end
+		ensure
+			Is_Assign: is_gamepad_enable~ a_value
+		end
 
 	enable_haptic
 			-- Unable the haptic (force feedback) functionality.
@@ -571,6 +615,139 @@ feature {NONE} -- Joystick implementation
 						l_open_index := l_open_index + 1
 					end
 					internal_joysticks.forth
+				end
+			end
+		end
+
+feature -- Gamepad methods
+	gamepads:CHAIN_INDEXABLE_ITERATOR[GAME_GAMEPAD]
+			-- Every {GAME_GAMEPAD} detected by `Current'
+		require
+			Gamepads_is_Gamepad_Enabled: is_gamepad_enable
+		local
+			l_gamepads:LINKED_LIST[GAME_GAMEPAD]
+		do
+			create l_gamepads.make
+			across internal_gamepads as la_gamepads loop
+				if attached la_gamepads.item as la_gamepad then
+					l_gamepads.extend (la_gamepad)
+				end
+			end
+			create Result.make (l_gamepads)
+		end
+
+	update_gamepads_state
+			-- Update the state of all opened gamepad. This procedure is
+			-- Called at each game loop instead you disable every gamepad event
+			-- with {GAME_EVENTS_CONTROLLER}.`disable_gamepad_*_event' or with
+			-- {GAME_EVENTS_CONTROLLER}.`disable_every_gamepad_events'
+		do
+			{GAME_SDL_EXTERNAL}.sdl_gamecontrollerupdate
+		end
+
+feature {NONE} -- Gamepad Implementations
+
+	internal_gamepads:ARRAYED_LIST[detachable GAME_GAMEPAD]
+			-- Every {GAME_GAMEPAD} connected to the system.
+
+	open_all_gamepad
+			-- Open all gamepad that is not already open.
+		require
+			Joysticks_is_enabled: is_gamepad_enable
+		do
+			internal_gamepads.do_all (agent (a_gamepad:detachable GAME_GAMEPAD) do
+								if attached a_gamepad as la_gamepad and then not la_gamepad.is_open then
+									la_gamepad.open
+								end
+							end)
+		end
+
+
+	close_all_gamepads
+		-- Close the gamepad that has been opened
+	require
+		Controller_Close_All_Gamepads_Joystick_Enabled: is_gamepad_enable
+		Close_All_Gamepad_Attach: internal_gamepads /= Void
+	do
+		internal_gamepads.do_all (agent (a_gamepad:detachable GAME_GAMEPAD) do
+								if attached a_gamepad as la_gamepad and then la_gamepad.is_open then
+									la_gamepad.close
+								end
+							end)
+	end
+
+	manage_gamepad_founded_callback(a_timestamp:NATURAL_32; a_joystick_id:INTEGER_32)
+			-- {Precursor}
+		local
+			l_gamepad:GAME_GAMEPAD
+		do
+			across internal_gamepads as la_gamepads loop
+				if attached la_gamepads.item as la_gamepad and then la_gamepad.open_index ~ a_joystick_id then
+					l_gamepad := la_gamepad
+				end
+			end
+			if not attached l_gamepad then
+				create l_gamepad.make (a_joystick_id)
+				internal_gamepads.extend (l_gamepad)
+				gamepad_found_actions.call (a_timestamp, l_gamepad)
+			end
+		end
+
+	manage_gamepad_removed_callback(a_timestamp:NATURAL_32; a_gamepad_id:INTEGER_32)
+			-- {Precursor}
+		local
+			l_index:INTEGER
+			l_cursor:ARRAYED_LIST_ITERATION_CURSOR [detachable GAME_GAMEPAD]
+			l_found:BOOLEAN
+		do
+
+			from
+				l_cursor := internal_gamepads.new_cursor
+				l_index := 1
+			until
+				l_cursor.after or l_found
+			loop
+				if attached l_cursor.item as la_item and then la_item.index = a_gamepad_id then
+					gamepad_remove_actions.call (a_timestamp, la_item)
+					l_found := True
+					manage_gamepad_removed_gamepad(a_timestamp, l_index)
+				end
+				l_index := l_index + 1
+				l_cursor.forth
+			end
+			if not l_found then
+				manage_gamepad_removed_gamepad(a_timestamp, a_gamepad_id + 1)
+			end
+		end
+
+	manage_gamepad_removed_gamepad(a_timestamp:NATURAL_32; a_index:INTEGER)
+			-- Remove the {GAME_GAMEPAD} at index `a_index' in `internal_gamepads'
+		local
+			l_open_index:INTEGER
+		do
+			if
+				internal_gamepads.valid_index (a_index) and then
+				attached internal_gamepads.at (a_index) as la_gamepad
+			then
+				gamepad_remove_actions.call ([a_timestamp, la_gamepad])
+				la_gamepad.remove
+				la_gamepad.close
+				if la_gamepad.is_events_running then
+					la_gamepad.stop_events
+				end
+				la_gamepad.clear_events
+				l_open_index := la_gamepad.open_index
+				internal_gamepads.at (a_index) := Void
+				from
+					internal_gamepads.move (a_index)
+				until
+					internal_gamepads.exhausted
+				loop
+					if attached internal_gamepads.item as la_next_gamepad then
+						la_next_gamepad.set_open_index(l_open_index)
+						l_open_index := l_open_index + 1
+					end
+					internal_gamepads.forth
 				end
 			end
 		end
