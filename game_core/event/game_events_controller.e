@@ -1094,7 +1094,7 @@ feature -- Access
 	is_gamepad_button_pressed_event_enable:BOOLEAN assign set_is_gamepad_button_pressed_event_enable
 			-- If the `gamepad_button_pressed_actions' event has to be processed.
 			-- Enabled by default
-		local
+	local
 			l_query:NATURAL_8
 		do
 			l_query := {GAME_SDL_EXTERNAL}.SDL_EventState({GAME_SDL_EXTERNAL}.sdl_controllerbuttondown, {GAME_SDL_EXTERNAL}.sdl_query)

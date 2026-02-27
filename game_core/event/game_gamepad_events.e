@@ -22,7 +22,7 @@ feature {NONE} -- Initialisation
 				do
 					button_pressed_events_dispatcher(a_timestamp, a_gamepad_id, a_button_id)
 				end
-					button_released_events_callback := agent (a_timestamp: NATURAL_32; a_gamepad_id:INTEGER_32; a_button_id:NATURAL_8)
+			button_released_events_callback := agent (a_timestamp: NATURAL_32; a_gamepad_id:INTEGER_32; a_button_id:NATURAL_8)
 				do
 					button_released_events_dispatcher(a_timestamp, a_gamepad_id, a_button_id)
 				end
@@ -87,7 +87,7 @@ feature -- Access
 	button_released_actions: ACTION_SEQUENCE [TUPLE [timestamp: NATURAL_32; button_id:NATURAL_8]]
 			-- When a button (identified by `button_id') of `Current' has been released.
 		require
-			Gamepad_Button_Pressed_Event_Enable: events_controller.is_gamepad_button_released_event_enable
+			Gamepad_Button_Released_Event_Enable: events_controller.is_gamepad_button_released_event_enable
 		do
 			if attached button_released_actions_internal as la_button_released_actions_internal then
 				Result := la_button_released_actions_internal

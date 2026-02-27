@@ -1864,6 +1864,13 @@ feature -- Function SDL.h
 --			"SDL_GetGamepadID"
 --		end
 
+	frozen SDL_SetHint(name,value:POINTER):BOOLEAN
+		external
+			"C (const char*, const char*) : SDL_bool | <SDL.h>"
+		alias
+			"SDL_SetHint"
+		end
+
 feature -- Manual C function (implemented in sdl_additions.c)
 
 	frozen setSDLRWops(rwop,cpf_infos:POINTER)

@@ -1113,6 +1113,10 @@ feature -- Other methods
 				disable_gl
 			end
 			clear_events
+
+			if is_gamepad_enable then-- Important de disable gamepad avant joystick
+				disable_gamepad
+			end
 			if is_joystick_enable then
 				disable_joystick
 			end

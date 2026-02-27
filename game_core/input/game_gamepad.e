@@ -18,7 +18,11 @@ inherit
 			is_running as is_events_running,
 			clear as clear_events
 		end
- --{GAME_LIBRARY_CONTROLLER}
+	GAMEPAD_BUTTONS
+		rename
+			make as make_buttons
+		end
+
 create
 	make
 
@@ -31,6 +35,7 @@ feature  -- Initialization
 			events_controller := game_library.events_controller
 			is_removed := false
 			make_events
+			make_buttons
 		end
 feature -- Access
 
@@ -117,14 +122,10 @@ feature -- Access
 --			manage_error_code(Result, "Error while querying the gamepad's instance ID.")
 --		end
 
+
+
 	events_controller:GAME_EVENTS_CONTROLLER
 			-- Used main event manager
-
---	is_connected: BOOLEAN
---		-- Check if the gamepad is connected
---		do
---			Result := {GAME_SDL_EXTERNAL}.sdl_gamecontrollergetattached (item)
---		end
 
 feature  {NONE} -- Implementation
 	dispose
