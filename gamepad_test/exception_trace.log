@@ -1,0 +1,162 @@
+
+game: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @3                make_event_is_running:       
+<0000000004592678>  (From GAME_GAMEPAD_EVENTS)
+                                           Postcondition violated.       Fail
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @3                                             
+<0000000004592678>  (From GAME_GAMEPAD_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @4                                             
+<0000000004592678>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    findcontroller @4      
+<0000000004590608>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @5                                             
+<00000000045905E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   make @1                                             
+<00000000045905A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   root's creation                                     
+<00000000045905A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+game: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @3                make_event_is_running:       
+<0000000004470678>  (From GAME_GAMEPAD_EVENTS)
+                                           Postcondition violated.       Fail
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @3                                             
+<0000000004470678>  (From GAME_GAMEPAD_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @4                                             
+<0000000004470678>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_LIBRARY_CONTROLLER
+                    findcontroller @4      
+<000000000446E608>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @5                                             
+<000000000446E5E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   make @1                                             
+<000000000446E5A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   root's creation                                     
+<000000000446E5A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+game: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @3                make_event_is_running:       
+<0000000004457CE8>  (From GAME_GAMEPAD_EVENTS)
+                                           Postcondition violated.       Fail
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @3                                             
+<0000000004457CE8>  (From GAME_GAMEPAD_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @4                                             
+<0000000004457CE8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ENGINE              make @9                                             
+<0000000004455678>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @5                                             
+<00000000044535E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   make @1                                             
+<00000000044535A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   root's creation                                     
+<00000000044535A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+game: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @3                make_event_is_running:       
+<00000000044FECE8>  (From GAME_GAMEPAD_EVENTS)
+                                           Postcondition violated.       Fail
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @3                                             
+<00000000044FECE8>  (From GAME_GAMEPAD_EVENTS)
+                                           Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME_GAMEPAD        make @4                                             
+<00000000044FECE8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+ENGINE              make @9                                             
+<00000000044FC678>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @5                                             
+<00000000044FA5E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   make @1                                             
+<00000000044FA5A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   root's creation                                     
+<00000000044FA5A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+
+game: system execution failed.
+Following is the set of recorded exceptions:
+
+-------------------------------------------------------------------------------
+Class / Object      Routine                Nature of exception           Effect
+-------------------------------------------------------------------------------
+ARRAYED_LIST        first @1               not_empty:                   
+<000000000464F748>                         Precondition violated.        Fail
+-------------------------------------------------------------------------------
+ENGINE              run @12                                             
+<0000000004651438>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+APPLICATION         make @5                                             
+<000000000464F5E8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   make @1                                             
+<000000000464F5A8>                         Routine failure.              Fail
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   root's creation                                     
+<000000000464F5A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+ARRAYED_LIST        first @2               index_small_enough:          
+<000000000464F748>                         Runtime check violated.       Exit
+-------------------------------------------------------------------------------
+ARRAYED_LIST        first @2                                            
+<000000000464F748>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+ENGINE              run @12                                             
+<0000000004651438>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+APPLICATION         make @5                                             
+<000000000464F5E8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   make @1                                             
+<000000000464F5A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
+GAME2_APPLICATION   root's creation                                     
+<000000000464F5A8>                         Routine failure.              Exit
+-------------------------------------------------------------------------------
