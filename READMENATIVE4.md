@@ -5,7 +5,7 @@
 
 3. Allez dans vos téléchargments dans l'explorateur de fichier.
 4. Double-cliquez sur le fichier que vous venez de télécharger.
-5. Si vous avez une alerte Windows disant que le logiciel peut être dangereux, cliquez sur 'plus d'information', puis sur 'exécuter quand même'. Un wizard d'installation d'EiffelStudio devait s'ouvrir.
+5. Si vous avez une alerte Windows disant que le logiciel peut être dangereux, cliquez sur 'plus d'information', puis sur 'exécuter quand même'. Un wizard d'installation d'EiffelStudio devrait s'ouvrir.
 6. <img width="616" height="399" alt="image" src="https://github.com/user-attachments/assets/6e623e95-a259-4fbd-ac92-f0ed3da26be2" />
 
 7. Cliquez sur 'next'.
@@ -42,7 +42,7 @@ Vous devez avoir L'IDE EiffelStudio d'installé pour pouvoir utiliser cette libr
 
 # Compiler un exemple
 1. Choisissez un exemple dans 'game2/example'.
-2. Copiez tous les DLLs le répertoire 'game2/C_lib_win/DLL32' ou 'game2/C_lib_win/DLL64'.
+2. Copiez tous les DLLs du répertoire 'game2/C_lib_win/DLL32' ou 'game2/C_lib_win/DLL64'.
 3. Collez tous les Dlls précédemment copiés dans le répertoire de l'exemple que vous voulez exécuter.
 4. Double-cliquez sur le fichier avec l'extension 'ecf' du répertoire de votre exemple. Ce fichier a généralement le même nom que le répertoire.
 
