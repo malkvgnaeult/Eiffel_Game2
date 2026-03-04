@@ -18,6 +18,7 @@
 
 13. Cliquez sur 'Install'
 <img width="623" height="394" alt="image" src="https://github.com/user-attachments/assets/5bfd53ad-9911-47f5-9d85-9468afa13fab" />
+14.Cliquez sur 'finish' unef ois l'installation terminée.
 
 
 # Installation de la librarire Eiffel_Game2 version développement
@@ -25,18 +26,18 @@ Vous devez avoir L'IDE EiffelStudio d'installé pour pouvoir utiliser cette libr
 1. Créez un répertoire dans lequel cloner le projet.
 2. Appelez-le 'game2'.
 3. Faites 'git clone --recursive https://github.com/tioui/Eiffel_Game2.git game2' afin de clone le repo.
-4. Faites un lien symbolique de votre répertoire 'game2' au répertoire 'contrib/library' d'EiffelStudio avec la commande suivante mklink "C:\Program Files\Eiffel Software\EiffelStudio 19.05 GPL\contrib\library\game2" "C:\<votre chemin vers 'game2'>game2".
+4. Faites un lien symbolique de votre répertoire 'game2' au répertoire 'contrib/library' d'EiffelStudio avec la commande suivante : mklink "C:\Program Files\Eiffel Software\EiffelStudio 19.05 GPL\contrib\library\game2" "C:\<votre chemin vers 'game2'>game2".
 5. Faites un 'git pull origin master' dans le répertoire 'game2' où vous avez cloné le projet afin d'être certain que vous êtes à jour. Il se peut que vous ayez à faire cette commande pour que cela fonctionne 'git config --global --add safe.directory 'C:/Program Files/Eiffel Software/EiffelStudio 19.05 GPL/contrib/library/game2''
 6. Téléchargez ce fichier: https://github.com/tioui/Eiffel_Game2/raw/refs/heads/windows_build/C_libraries.zip.
-7. Placez le répertoire 'C_lib_win' à la racine du répertoire 'game2'.
-8. Ouvrez un 'EiffelStudio command prompt'.
+7. Placez le répertoire 'C_lib_win' à la racine du répertoire 'game2' après avoir extrait le contenu du fichier.
+8. Ouvrez un 'EiffelStudio command prompt'. Le meilleur moyen de faire cela d'appuyer sur la touche 'Windows' et de taper 'Eiffel' dans la barre de recherche.
 <img width="1479" height="315" alt="image" src="https://github.com/user-attachments/assets/896f7f8c-9231-42f9-a322-8c7f4836d2db" />
 
 9. Allez dans le répertoire 'game2/Clib' à l'aide de la commande 'cd contrib/library/game2/Clib'.
 10. Une fois dans ce répertoire, exécutez la commande 'finish_freezing -library'.
-11. Afin de vous assurez que tout fonctionne correctement, vous pouvez essayer de compiler un exemple de la libraire.
+11. Afin de vous assurer que tout fonctionne correctement, vous pouvez essayer de compiler un exemple de la librairie.
 
-## Compiler un exemple
+# Compiler un exemple
 1. Choisissez un exemple dans 'game2/example'.
 2. Copiez tous les DLLs le répertoire 'game2/C_lib_win/DLL32' ou 'game2/C_lib_win/DLL64'.
 3. Collez tous les Dlls précédemment copiés dans le répertoire de l'exemple que vous voulez exécuter.
@@ -66,8 +67,8 @@ J’ai passé un bon moment à lire la documentation de SDL afin de comprendre s
 
 La quantité de code à produire était beaucoup plus importante que prévu. J’ai dû implémenter la gestion des événements liés aux manettes, comme la détection d’un appareil connecté ou retiré, l’appui sur un bouton, ou encore les changements de position des axes, qui correspondent aux joysticks et aux gâchettes. Pour comprendre comment connecter une manette et gérer ses événements dans un jeu, je m’étais appuyé sur un tutoriel en C et j’ai tenté de reproduire la logique en Eiffel. Cela m’a obligé à modifier la portée de certaines méthodes pour que tout fonctionne correctement.
 
-À un moment, j’ai réalisé que j’avais complètement oublié d’implémenter les joysticks, car SDL les désigne sous le terme axis. Je pensais au départ que cela faisait référence au gyroscope de la manette. Pour corriger cela, je me suis basé sur l’implémentation de SDL_Joystick réalisée par Louis, ce qui m’a permis de mieux comprendre la structure attendue.
+À un moment, j’ai réalisé que j’avais complètement oublié d’implémenter les joysticks, car SDL les désigne sous le terme 'axis'. Je pensais au départ que cela faisait référence au gyroscope de la manette. Pour corriger cela, j'ai implémenté les fonctions correspondantes permettant d'obtenir la valeur d'un 'axis' d'une manette.
 
 Comme je n’avais pas une vision claire de ce qu’il fallait faire, j’avais souvent l’impression d’avancer dans le noir. J’ai demandé à Louis des indications sur ce qu’il souhaitait pour la librairie de gestion des manettes, mais il m’a simplement répondu qu’il ne fallait pas « réinventer la roue » et qu’il me laissait proposer une solution. Cette liberté ajoutait une certaine pression, car je devais trouver une approche cohérente sans modèle parfaitement défini.
 
-Il me reste encore à tester certains événements, notamment la détection d’un appareil branché ou retiré, afin de m’assurer que l’ensemble du système fonctionne correctement dans toutes les situations.
+Il me reste encore à tester certains événements, notamment la détection d’un appareil branché ou retiré et les événements liés aux 'axis' afin de m’assurer que l’ensemble du système fonctionne correctement dans toutes les situations.
