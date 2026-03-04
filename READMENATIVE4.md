@@ -45,7 +45,7 @@ Vous devez avoir L'IDE EiffelStudio d'installé pour pouvoir utiliser cette libr
 
 # Tester le test de manette de jeu
 Note: Votre manette doit être branché avant de lancer le projet afin d'être détectée.
-Ce test consiste à tester les inputs de la manette branchée. La valeur de la position du joystick gauche est seulement détecté lors de l'appuie d'un bouton.
+Ce test consiste à tester les inputs de la manette branchée. La valeur de la position d'un 'axis' est seulement détecté lors de l'appuie d'un bouton. Ce programme ne sert qu'à vérifier si la librairie arrive à comprendre les premiers événements testés. C'est assez rudimentaire comparé à l'issue d'exemple que je ferai par la suite.
 
 1. Ouvrir le dossier 'gamepad_test' dans la branche 'documentation'. Le dossier est la racine de 'game2'.
 2. Double-cliquez le fichier 'game.ecf'.
