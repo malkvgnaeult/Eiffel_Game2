@@ -18,7 +18,8 @@
 
 13. Cliquez sur 'Install'
 <img width="623" height="394" alt="image" src="https://github.com/user-attachments/assets/5bfd53ad-9911-47f5-9d85-9468afa13fab" />
-14.Cliquez sur 'finish' unef ois l'installation terminée.
+
+14.Cliquez sur 'finish' une fois l'installation terminée.
 
 
 # Installation de la librarire Eiffel_Game2 version développement
