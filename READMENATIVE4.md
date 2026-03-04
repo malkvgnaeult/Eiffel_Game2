@@ -1,6 +1,8 @@
 # Installation d'EiffelStudio
 1. Cliquez sur ce lien: https://account.eiffel.com/downloads
 2. Téléchargez la version la plus récente finissant par '64.msi'.
+<img width="1322" height="202" alt="image" src="https://github.com/user-attachments/assets/481fa65d-7581-4464-8d44-f6787fa4bcb2" />
+
 3. Allez dans vos téléchargments dans l'explorateur de fichier.
 4. Double-cliquez sur le fichier que vous venez de télécharger.
 5. Si vous avez une alerte Windows disant que le logiciel peut être dangereux, cliquez sur 'plus d'information', puis sur 'exécuter quand même'. Un wizard d'installation d'EiffelStudio devait s'ouvrir.
@@ -14,12 +16,12 @@
 10. Choisissez la langue que vous voulez.
 <img width="620" height="402" alt="image" src="https://github.com/user-attachments/assets/2347127b-43c6-4309-96cf-8fef248bfdd4" />
 
-12. Cochez l'option 'Create a shortcut on desktop' si ça vous intéresse.
+11. Cochez l'option 'Create a shortcut on desktop' si ça vous intéresse.
 
-13. Cliquez sur 'Install'
+12. Cliquez sur 'Install'
 <img width="623" height="394" alt="image" src="https://github.com/user-attachments/assets/5bfd53ad-9911-47f5-9d85-9468afa13fab" />
 
-14.Cliquez sur 'finish' une fois l'installation terminée.
+13.Cliquez sur 'finish' une fois l'installation terminée.
 
 
 # Installation de la librarire Eiffel_Game2 version développement
