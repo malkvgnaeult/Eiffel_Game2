@@ -18,22 +18,24 @@ feature {NONE} -- Initialization
 	make(a_renderer:GAME_RENDERER)
 			-- Initialization of `Current' for used with `a_renderer'
 		do
-			make_from_file(a_renderer,"maryo.png")
+			make_from_file(a_renderer,"rectangle.png")
+			x_rotation_center := texture.width//2
+			y_rotation_center := texture.height//2
 			initialize_animation_coordinate
 		end
 
 	initialize_animation_coordinate
 			-- Create the `animation_coordinates'
 		do
-			create {ARRAYED_LIST[TUPLE[x,y:INTEGER]]} animation_coordinates.make(4)
+--			create {ARRAYED_LIST[TUPLE[x,y:INTEGER]]} animation_coordinates.make(4)
 			sub_image_height := texture.height
-			sub_image_width := texture.width // 3
-			animation_coordinates.extend ([texture.width // 3, 0])	-- Be sure to place the image standing still first
-			animation_coordinates.extend ([0, 0])
-			animation_coordinates.extend ([(texture.width // 3) * 2, 0])
-			animation_coordinates.extend ([0, 0])
-			sub_image_x := animation_coordinates.first.x	-- Place the image standing still
-			sub_image_y := animation_coordinates.first.y	-- Place the image standing still
+			sub_image_width := texture.width
+--			animation_coordinates.extend ([texture.width // 3, 0])	-- Be sure to place the image standing still first
+--			animation_coordinates.extend ([0, 0])
+--			animation_coordinates.extend ([(texture.width // 3) * 2, 0])
+--			animation_coordinates.extend ([0, 0])
+			sub_image_x := 0	-- Place the image standing still
+			sub_image_y := 0	-- Place the image standing still
 		end
 
 feature -- Access
@@ -45,23 +47,33 @@ feature -- Access
 			l_coordinate:TUPLE[x,y:INTEGER]
 			l_delta_time:NATURAL_32
 		do
-			if going_left or going_right then
-				l_coordinate := animation_coordinates.at ((((a_timestamp // animation_delta) \\
-												animation_coordinates.count.to_natural_32) + 1).to_integer_32)
-				sub_image_x := l_coordinate.x
-				sub_image_y := l_coordinate.y
 				l_delta_time := a_timestamp - old_timestamp
 				if l_delta_time // movement_delta > 0 then
-					if going_right then
-						facing_left := False
-						x := x + (l_delta_time // movement_delta).to_integer_32
-					else
-						facing_left := True
-						x := x - (l_delta_time // movement_delta).to_integer_32
+					if moving then
+						if going_right then
+							x := x + (l_delta_time // movement_delta).to_integer_32
+						elseif going_left then
+							x := x - (l_delta_time // movement_delta).to_integer_32
+						end
+
+						if going_up then
+							y := y - (l_delta_time // movement_delta).to_integer_32
+						elseif going_down then
+							y := y + (l_delta_time // movement_delta).to_integer_32
+						end
+					end
+
+					if rotating then
+						if rotating_right then
+							angle := angle + (l_delta_time // movement_delta).to_real_64
+						elseif rotating_left then
+							angle := angle - (l_delta_time // movement_delta).to_real_64
+						end
+
 					end
 					old_timestamp := old_timestamp + (l_delta_time // movement_delta) * movement_delta
 				end
-			end
+
 		end
 
 	go_left(a_timestamp:NATURAL_32)
@@ -69,6 +81,7 @@ feature -- Access
 		do
 			old_timestamp := a_timestamp
 			going_left := True
+			moving := true
 		end
 
 	go_right(a_timestamp:NATURAL_32)
@@ -76,30 +89,60 @@ feature -- Access
 		do
 			old_timestamp := a_timestamp
 			going_right := True
+			moving := true
 		end
 
-	stop_left
-			-- Make `Current' stop moving to the left
+	go_up(a_timestamp:NATURAL_32)
+			-- Make `Current' starting to move right
 		do
-			going_left := False
-			if not going_right then
-				sub_image_x := animation_coordinates.first.x	-- Place the image standing still
-				sub_image_y := animation_coordinates.first.y	-- Place the image standing still
-			end
+			old_timestamp := a_timestamp
+			going_up := True
+			moving := true
 		end
 
-	stop_right
-			-- Make `Current' stop moving to the right
+	go_down(a_timestamp:NATURAL_32)
+			-- Make `Current' starting to move down
 		do
-			going_right := False
-			if not going_left then
-				sub_image_x := animation_coordinates.first.x	-- Place the image standing still
-				sub_image_y := animation_coordinates.first.y	-- Place the image standing still
-			end
+			old_timestamp := a_timestamp
+			going_down := True
+			moving := true
 		end
 
-	facing_left:BOOLEAN
-			-- Is `Current' looking in the left direction
+	rotate_right(a_timestamp:NATURAL_32)
+			-- Make `Current' starting to rotate right
+		do
+			old_timestamp := a_timestamp
+			rotating_right := True
+			rotating := true
+		end
+
+	rotate_left(a_timestamp:NATURAL_32)
+			-- Make `Current' starting to rotate left
+		do
+			old_timestamp := a_timestamp
+			rotating_left := True
+			rotating := true
+		end
+
+	stop
+			-- Make `Current' stop moving
+		do
+			moving := false
+			going_left := false
+			going_right := false
+			going_down := false
+			going_up := false
+			rotating := false
+			rotating_right := false
+			rotating_left := false
+			sub_image_x := 0
+			sub_image_y := 0
+		end
+
+	moving:BOOLEAN
+		-- IS 'Current' moving
+	rotating:BOOLEAN
+		-- Is 'Current' rotation
 
 	going_left:BOOLEAN
 			-- Is `Current' moving left
@@ -107,11 +150,25 @@ feature -- Access
 	going_right:BOOLEAN
 			-- Is `Current' moving right
 
+	going_up:BOOLEAN
+			-- Is `Current' moving up
+
+	going_down:BOOLEAN
+			-- Is `Current' moving down
+
+	rotating_right:BOOLEAN
+		-- Is 'Current' rotating right
+
+	rotating_left:BOOLEAN
+		-- Is 'Current' rotating left
+
 	x:INTEGER assign set_x
 			-- Horizontal position of `Current'
 
 	y:INTEGER assign set_y
 			-- Vertical position of `Current'
+
+	angle:REAL_64 assign set_angle
 
 	set_x(a_x:INTEGER)
 			-- Assign the value of `x' with `a_x'
@@ -129,16 +186,26 @@ feature -- Access
 			Is_Assign: y = a_y
 		end
 
+	set_angle(a_angle:REAL_64)
+			-- Assign the value of `angle' with `a_angle'
+		do
+			angle := a_angle
+		ensure
+			Is_Assign: angle = a_angle
+		end
+
 	sub_image_x, sub_image_y:INTEGER
 			-- Position of the portion of image to show inside `surface'
 
 	sub_image_width, sub_image_height:INTEGER
 			-- Dimension of the portion of image to show inside `surface'
 
+	x_rotation_center:INTEGER
+
+	y_rotation_center:INTEGER
+
 feature {NONE} -- implementation
 
-	animation_coordinates:LIST[TUPLE[x,y:INTEGER]]
-			-- Every coordinate of portion of images in `surface'
 
 	old_timestamp:NATURAL_32
 			-- When appen the last movement (considering `movement_delta')

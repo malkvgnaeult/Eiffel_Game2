@@ -25,10 +25,8 @@ feature {NONE} -- Initialization
 			l_window_builder.set_title ("Example Controller")
 			l_window_builder.enable_must_renderer_synchronize_update	-- Ask to the video card to manage the frame synchronisation (FPS)
 			window := l_window_builder.generate_window
-			create desert.make (window.renderer)
-			create maryo.make (window.renderer)
-			has_error := desert.has_error
-
+			create rectangle.make (window.renderer)
+			create controllers.make (1)
 		end
 
 feature -- Access
@@ -38,20 +36,16 @@ feature -- Access
 
 		require
 			No_Error: not has_error
-		local
-			l_controller: GAME_CONTROLLER
 		do
 			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (0, 0, 0))
 			window.renderer.clear
 			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (0, 128, 255))
-			maryo.y := 375
-			maryo.x := 200
+			rectangle.y := 300
+			rectangle.x := 200
 			game_library.quit_signal_actions.extend (agent on_quit)
-			window.key_pressed_actions.extend (agent on_key_pressed)
-			window.key_released_actions.extend (agent on_key_released)
 
 			game_library.controller_found_actions.extend (agent on_controller_found)
-
+			game_library.controller_remove_actions.extend (agent on_controller_removed)
 			game_library.iteration_actions.extend (agent on_iteration)
 			if window.renderer.driver.is_present_synchronized_supported then	-- If the Video card accepted the frame synchronisation (FPS)
 				game_library.launch_no_delay									-- Don't let the library managed the frame synchronisation
@@ -68,85 +62,82 @@ feature -- Access
 	window:GAME_WINDOW_RENDERED
 			-- The window to draw the scene
 
-	maryo:MARYO
-			-- The main character of the game
-
-	desert:DESERT
-			-- The background
+	rectangle:RECTANGLE
+			-- The main rectangle of the game
+	controllers: ARRAYED_LIST[GAME_CONTROLLER]
 
 feature {NONE} -- Implementation
 
 	on_controller_found(timestamp:NATURAL_32; controller:GAME_CONTROLLER)
-	local
-		l_mappine_string:C_STRING
-		l_check:INTEGER
 		do
 			controller.open
 			controller.button_pressed_actions.extend (agent on_button_pressed)
 			controller.button_released_actions.extend (agent on_button_released)
 			controller.axis_motion_actions.extend (agent on_axis_motion)
-			io.put_string (controller.guid.as_string_32 + "\\")
-			io.put_string (controller.joystick.out)
-	--		create l_mappine_string.make (controller.guid.as_string_32 + ","+controller.name+","+"a:b2,b:b1,y:b3,x:b0,start:b9,guide:b12,back:b8,dpup:h0.1,dpleft:h0.8,dpdown:h0.4,dpright:h0.2,leftshoulder:b4,rightshoulder:b5,leftstick:b10,rightstick:b11,leftx:a0,lefty:a1,rightx:a2,righty:a3,lefttrigger:b6,righttrigger:b7")
-		--	l_check := {GAME_SDL_EXTERNAL}.sdl_gamecontrolleraddmapping (l_mappine_string.item)
-			io.put_integer_32 (l_check)
+			controllers.extend (controller)
+		end
+
+	on_controller_removed(timestamp:NATURAL_32; controller:GAME_CONTROLLER)
+		do
+			controllers.remove
 		end
 
 	on_iteration(a_timestamp:NATURAL_32)
 			-- Event that is launch at each iteration.
 		do
-			maryo.update (a_timestamp)	-- Update Maryo animation and coordinate
-
-			if maryo.x < 0 then		-- Be sure that Maryo does not get out of the screen
-				maryo.x := 0
-			elseif maryo.x + maryo.sub_image_width > desert.texture.width then
-				maryo.x := desert.texture.width - maryo.sub_image_width
-			end
-
+			rectangle.update (a_timestamp)
 			-- Draw the scene
-			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (0, 128, 255))	-- Redraw the blue sky
+			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (255, 255, 255))	-- Redraw the white background
 			window.renderer.clear
-
-			window.renderer.draw_texture (desert.texture, 0, 0)		-- Redraw the desert
-			window.renderer.draw_sub_texture_with_mirror (		-- Redraw Maryo
-									maryo.texture,  maryo.sub_image_x, maryo.sub_image_y, maryo.sub_image_width, maryo.sub_image_height,
-									maryo.x, maryo.y, False, maryo.facing_left
-								)
-
+			window.renderer.draw_sub_texture_with_rotation (rectangle.texture, rectangle.sub_image_x, rectangle.sub_image_y, rectangle.sub_image_width, rectangle.sub_image_height, rectangle.x, rectangle.y, rectangle.x_rotation_center, rectangle.y_rotation_center, rectangle.angle)
+			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (0, 0, 0))	-- Redraw the black thing
+		--	window.renderer.draw_filled_rectangle (200, 250, 200, 500)
 			window.renderer.present		-- Update modification in the screen
 		end
 
 	on_axis_motion(a_timestamp:NATURAL_32;a_axis_id:NATURAL_8;a_value:INTEGER_16)
 		do
-		across game_library.internal_controllers as l_controller loop
-			if attached l_controller.item as la_controller then
-				if (la_controller.axis.left_x = a_axis_id) then
+			across controllers as controller loop
+				if (controller.item.axis.left_x = a_axis_id) then
 					if a_value < 0 then
-						maryo.go_left (a_timestamp)
+						rectangle.go_left (a_timestamp)
 					elseif a_value > 0 then
-						maryo.go_right (a_timestamp)
+						rectangle.go_right (a_timestamp)
 					end
 				end
-				if a_value = 0 then
-					if maryo.going_left then
-						maryo.stop_left
-					elseif maryo.going_right then
-						maryo.stop_right
+
+				if (controller.item.axis.left_y = a_axis_id) then
+					if a_value < 0 then
+						rectangle.go_up (a_timestamp)
+					elseif a_value > 0 then
+						rectangle.go_down (a_timestamp)
 					end
+				end
+
+				if controller.item.axis.trigger_left = a_axis_id then
+					rectangle.rotate_left (a_timestamp)
+				end
+
+				if controller.item.axis.trigger_right = a_axis_id then
+					rectangle.rotate_right (a_timestamp)
+				end
+
+				if a_value = 0 then
+					rectangle.stop
 				end
 			end
-		end
+
 		end
 
 	on_button_pressed(a_timestamp:NATURAL_32; a_button_id:NATURAL_8)
 		do
-					maryo.go_right(a_timestamp)
+				--	rectangle.go_right(a_timestamp)
 		end
 
 	on_button_released(a_timestamp:NATURAL_32; a_button_id:NATURAL_8)
 		do
-					maryo.stop_right
-					io.put_string (a_button_id.out)
+				--	rectangle.stop_right
+				--	io.put_string (a_button_id.out)
 		end
 
 	on_quit(a_timestamp: NATURAL_32)
