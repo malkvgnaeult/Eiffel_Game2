@@ -19,23 +19,22 @@ feature {NONE} -- Initialization
 			-- Initialization of `Current' for used with `a_renderer'
 		do
 			make_from_file(a_renderer,"rectangle.png")
-			x_rotation_center := texture.width//2
-			y_rotation_center := texture.height//2
-			initialize_animation_coordinate
+
+			initialize_coordinate
 		end
 
-	initialize_animation_coordinate
+	initialize_coordinate
 			-- Create the `animation_coordinates'
 		do
---			create {ARRAYED_LIST[TUPLE[x,y:INTEGER]]} animation_coordinates.make(4)
+
 			sub_image_height := texture.height
 			sub_image_width := texture.width
---			animation_coordinates.extend ([texture.width // 3, 0])	-- Be sure to place the image standing still first
---			animation_coordinates.extend ([0, 0])
---			animation_coordinates.extend ([(texture.width // 3) * 2, 0])
---			animation_coordinates.extend ([0, 0])
-			sub_image_x := 0	-- Place the image standing still
-			sub_image_y := 0	-- Place the image standing still
+
+			sub_image_x := 0
+			sub_image_y := 0
+
+			x_rotation_center := texture.width//2
+			y_rotation_center := texture.height//2
 		end
 
 feature -- Access

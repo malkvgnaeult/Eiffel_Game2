@@ -84,14 +84,25 @@ feature {NONE} -- Implementation
 
 	on_iteration(a_timestamp:NATURAL_32)
 			-- Event that is launch at each iteration.
+			local
+				points:ARRAYED_LIST[TUPLE[x,y:INTEGER]]
 		do
 			rectangle.update (a_timestamp)
 			-- Draw the scene
 			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (255, 255, 255))	-- Redraw the white background
 			window.renderer.clear
-			window.renderer.draw_sub_texture_with_rotation (rectangle.texture, rectangle.sub_image_x, rectangle.sub_image_y, rectangle.sub_image_width, rectangle.sub_image_height, rectangle.x, rectangle.y, rectangle.x_rotation_center, rectangle.y_rotation_center, rectangle.angle)
 			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (0, 0, 0))	-- Redraw the black thing
-		--	window.renderer.draw_filled_rectangle (200, 250, 200, 500)
+			window.renderer.draw_sub_texture_with_rotation (rectangle.texture, rectangle.sub_image_x, rectangle.sub_image_y, rectangle.sub_image_width, rectangle.sub_image_height, rectangle.x, rectangle.y, rectangle.x_rotation_center, rectangle.y_rotation_center, rectangle.angle)
+			window.renderer.draw_filled_rectangle (rectangle.x + rectangle.texture.width//4, rectangle.y + rectangle.texture.height//3 + 7, rectangle.texture.width//2, rectangle.texture.width//2)
+			create points.make(10)
+			points.extend ([300,200])
+			points.extend ([100,50])
+			points.extend ([10,500])
+			points.extend ([100,500])
+			points.extend ([1,5])
+			points.extend ([70,70])
+			window.renderer.draw_connected_lines (points)
+
 			window.renderer.present		-- Update modification in the screen
 		end
 
