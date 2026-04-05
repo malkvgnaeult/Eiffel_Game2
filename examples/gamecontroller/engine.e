@@ -41,6 +41,9 @@ feature -- Access
 			window.renderer.clear
 			rectangle.y := 300
 			rectangle.x := 200
+			red := 0
+			green := 0
+			blue := 0
 			game_library.quit_signal_actions.extend (agent on_quit)
 
 			game_library.controller_found_actions.extend (agent on_controller_found)
@@ -72,7 +75,7 @@ feature {NONE} -- Implementation
 		do
 			controller.open
 			controller.button_pressed_actions.extend (agent on_button_pressed)
-			controller.button_released_actions.extend (agent on_button_released)
+		--	controller.button_released_actions.extend (agent on_button_released)
 			controller.axis_motion_actions.extend (agent on_axis_motion)
 			controllers.extend (controller)
 		end
@@ -92,19 +95,17 @@ feature {NONE} -- Implementation
 			-- Draw the scene
 			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (255, 255, 255))	-- Redraw the white background
 			window.renderer.clear
-			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (0, 0, 0))	-- Redraw the black thing
-			window.renderer.draw_sub_texture_with_rotation (rectangle.texture, rectangle.sub_image_x, rectangle.sub_image_y, rectangle.sub_image_width, rectangle.sub_image_height, rectangle.x, rectangle.y, rectangle.x_rotation_center, rectangle.y_rotation_center, rectangle.angle)
-			window.renderer.draw_filled_rectangle (rectangle.x + rectangle.texture.width//4, rectangle.y + rectangle.texture.height//3 + 7, rectangle.texture.width//2, rectangle.texture.width//2)
-			create points.make(10)
-			points.extend ([300,200])
-			points.extend ([100,50])
-			points.extend ([10,500])
-			points.extend ([100,500])
-			points.extend ([1,5])
-			points.extend ([70,70])
-			window.renderer.draw_connected_lines (points)
+			draw_square
+
 			{GAME_SDL_EXTERNAL}.sdl_gamecontrollerupdate
 			window.renderer.present		-- Update modification in the screen
+		end
+
+	draw_square
+		do
+			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (red, green, blue))	-- Redraw the black thing
+			window.renderer.draw_sub_texture_with_rotation (rectangle.texture, rectangle.sub_image_x, rectangle.sub_image_y, rectangle.sub_image_width, rectangle.sub_image_height, rectangle.x, rectangle.y, rectangle.x_rotation_center, rectangle.y_rotation_center, rectangle.angle)
+			window.renderer.draw_filled_rectangle (rectangle.x + rectangle.texture.width//4, rectangle.y + rectangle.texture.height//3 + 7, rectangle.texture.width//2, rectangle.texture.width//2)
 		end
 
 	on_axis_motion(a_timestamp:NATURAL_32;a_axis_id:NATURAL_8;a_value:INTEGER_16)
@@ -119,7 +120,10 @@ feature {NONE} -- Implementation
 					handle_left_joystick_y_motion(a_timestamp,a_value)
 				end
 
-				handle_rotation(a_timestamp,a_axis_id,a_value,controller.item)
+				if a_axis_id = controller.item.axis.trigger_left or a_axis_id = controller.item.axis.trigger_right then
+					handle_rotation(a_timestamp,a_axis_id,a_value,controller.item)
+				end
+
 
 			end
 
@@ -161,14 +165,29 @@ feature {NONE} -- Implementation
 
 
 	on_button_pressed(a_timestamp:NATURAL_32; a_button_id:NATURAL_8)
+				-- Event that is launch at each button press
+		local
+			l_controller:GAME_CONTROLLER
 		do
-				--	rectangle.go_right(a_timestamp)
-		end
-
-	on_button_released(a_timestamp:NATURAL_32; a_button_id:NATURAL_8)
-		do
-				--	rectangle.stop_right
-				--	io.put_string (a_button_id.out)
+			l_controller := controllers.first--assume qu'il y a seulement une manette
+			if l_controller.buttons.north = a_button_id then
+				--orange
+				red := 255
+				green:=165
+				blue:=50
+			elseif l_controller.buttons.west = a_button_id then
+				red := 0
+				green:=0
+				blue:=255
+			elseif l_controller.buttons.east = a_button_id then
+				red :=255
+				green:=0
+				blue:=0
+			elseif l_controller.buttons.south = a_button_id then
+				red := 35
+				green:=170
+				blue:=35
+			end
 		end
 
 	on_quit(a_timestamp: NATURAL_32)
@@ -177,4 +196,7 @@ feature {NONE} -- Implementation
 			game_library.stop  -- Stop the controller loop (allow game_library.launch to return)
 		end
 
+	red:NATURAL_8
+	green:NATURAL_8
+	blue:NATURAL_8
 end
