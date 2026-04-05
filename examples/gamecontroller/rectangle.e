@@ -48,19 +48,13 @@ feature -- Access
 		do
 				l_delta_time := a_timestamp - old_timestamp
 				if l_delta_time // movement_delta > 0 then
-					if moving then
-						if going_right then
-							x := x + (l_delta_time // movement_delta).to_integer_32
-						elseif going_left then
-							x := x - (l_delta_time // movement_delta).to_integer_32
-						end
 
-						if going_up then
-							y := y - (l_delta_time // movement_delta).to_integer_32
-						elseif going_down then
-							y := y + (l_delta_time // movement_delta).to_integer_32
+						if going_horizontal then
+							x := x + (x_motion_value.as_integer_32//10000)
 						end
-					end
+						if going_vertical then
+							y := y + (y_motion_value.as_integer_32//10000)
+						end
 
 					if rotating then
 						if rotating_right then
@@ -75,36 +69,35 @@ feature -- Access
 
 		end
 
-	go_left(a_timestamp:NATURAL_32)
+	x_motion_value:INTEGER_16
+
+	go_horizontal(a_timestamp:NATURAL_32;a_value:INTEGER_16)
 			-- Make `Current' starting to move left
 		do
 			old_timestamp := a_timestamp
-			going_left := True
-			moving := true
+			going_horizontal := true
+
+			x_motion_value := a_value
 		end
 
-	go_right(a_timestamp:NATURAL_32)
-			-- Make `Current' starting to move right
-		do
-			old_timestamp := a_timestamp
-			going_right := True
-			moving := true
-		end
+--	go_right(a_timestamp:NATURAL_32;a_value:INTEGER_16)
+--			-- Make `Current' starting to move right
+--		do
+--			old_timestamp := a_timestamp
+--			going_right := True
 
-	go_up(a_timestamp:NATURAL_32)
-			-- Make `Current' starting to move right
-		do
-			old_timestamp := a_timestamp
-			going_up := True
-			moving := true
-		end
+--			x_motion_value := a_value
+--		end
 
-	go_down(a_timestamp:NATURAL_32)
-			-- Make `Current' starting to move down
+	y_motion_value:INTEGER_16
+
+	go_vertical(a_timestamp:NATURAL_32;a_value:INTEGER_16)
+			-- Make `Current' starting to move vertically
 		do
 			old_timestamp := a_timestamp
-			going_down := True
-			moving := true
+			going_vertical := true
+
+			y_motion_value := a_value
 		end
 
 	rotate_right(a_timestamp:NATURAL_32)
@@ -123,37 +116,32 @@ feature -- Access
 			rotating := true
 		end
 
-	stop
-			-- Make `Current' stop moving
+	stop_rotation
+			-- Make `Current' stop rotating
 		do
-			moving := false
-			going_left := false
-			going_right := false
-			going_down := false
-			going_up := false
 			rotating := false
 			rotating_right := false
 			rotating_left := false
-			sub_image_x := 0
-			sub_image_y := 0
 		end
 
-	moving:BOOLEAN
-		-- IS 'Current' moving
+	stop_left_x_axis
+		do
+			going_horizontal := false
+		end
+
+	stop_left_y_axis
+		do
+			going_vertical := false
+		end
+
 	rotating:BOOLEAN
 		-- Is 'Current' rotation
 
-	going_left:BOOLEAN
-			-- Is `Current' moving left
+	going_horizontal:BOOLEAN
+			-- Is `Current' moving horizontally
 
-	going_right:BOOLEAN
-			-- Is `Current' moving right
-
-	going_up:BOOLEAN
-			-- Is `Current' moving up
-
-	going_down:BOOLEAN
-			-- Is `Current' moving down
+	going_vertical:BOOLEAN
+			-- Is `Current' moving vertically
 
 	rotating_right:BOOLEAN
 		-- Is 'Current' rotating right

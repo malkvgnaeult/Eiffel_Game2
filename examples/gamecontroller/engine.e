@@ -39,7 +39,6 @@ feature -- Access
 		do
 			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (0, 0, 0))
 			window.renderer.clear
-			window.renderer.set_drawing_color (create {GAME_COLOR}.make_rgb (0, 128, 255))
 			rectangle.y := 300
 			rectangle.x := 200
 			game_library.quit_signal_actions.extend (agent on_quit)
@@ -69,6 +68,7 @@ feature -- Access
 feature {NONE} -- Implementation
 
 	on_controller_found(timestamp:NATURAL_32; controller:GAME_CONTROLLER)
+			-- Event that is launch at each controller found
 		do
 			controller.open
 			controller.button_pressed_actions.extend (agent on_button_pressed)
@@ -78,6 +78,7 @@ feature {NONE} -- Implementation
 		end
 
 	on_controller_removed(timestamp:NATURAL_32; controller:GAME_CONTROLLER)
+				-- Event that is launch at each controller removed
 		do
 			controllers.remove
 		end
@@ -102,43 +103,62 @@ feature {NONE} -- Implementation
 			points.extend ([1,5])
 			points.extend ([70,70])
 			window.renderer.draw_connected_lines (points)
-
+			{GAME_SDL_EXTERNAL}.sdl_gamecontrollerupdate
 			window.renderer.present		-- Update modification in the screen
 		end
 
 	on_axis_motion(a_timestamp:NATURAL_32;a_axis_id:NATURAL_8;a_value:INTEGER_16)
+			-- Event that is launch at each motion of an axis
 		do
 			across controllers as controller loop
 				if (controller.item.axis.left_x = a_axis_id) then
-					if a_value < 0 then
-						rectangle.go_left (a_timestamp)
-					elseif a_value > 0 then
-						rectangle.go_right (a_timestamp)
-					end
+					handle_left_joystick_x_motion(a_timestamp,a_value)
 				end
 
 				if (controller.item.axis.left_y = a_axis_id) then
-					if a_value < 0 then
-						rectangle.go_up (a_timestamp)
-					elseif a_value > 0 then
-						rectangle.go_down (a_timestamp)
-					end
+					handle_left_joystick_y_motion(a_timestamp,a_value)
 				end
 
-				if controller.item.axis.trigger_left = a_axis_id then
-					rectangle.rotate_left (a_timestamp)
-				end
+				handle_rotation(a_timestamp,a_axis_id,a_value,controller.item)
 
-				if controller.item.axis.trigger_right = a_axis_id then
-					rectangle.rotate_right (a_timestamp)
-				end
-
-				if a_value = 0 then
-					rectangle.stop
-				end
 			end
 
 		end
+
+		handle_left_joystick_x_motion(a_timestamp:NATURAL_32;a_value:INTEGER_16)
+			do
+				if a_value < 0 or a_value > 0 then
+					rectangle.go_horizontal (a_timestamp,a_value)
+				elseif a_value = 0 then
+					rectangle.stop_left_x_axis
+				end
+			--	io.put_integer_16 (a_value)
+			end
+
+		handle_left_joystick_y_motion(a_timestamp:NATURAL_32;a_value:INTEGER_16)
+		do
+			if a_value < 0 or a_value > 0 then
+				rectangle.go_vertical (a_timestamp,a_value)
+			elseif a_value = 0 then
+				rectangle.stop_left_y_axis
+			end
+			io.put_integer_16 (a_value)
+		end
+
+		handle_rotation(a_timestamp:NATURAL_32;a_axis_id:NATURAL_8;a_value:INTEGER_16;a_controller:GAME_CONTROLLER)
+			do
+				if a_controller.axis.trigger_left = a_axis_id then
+					rectangle.rotate_left (a_timestamp)
+				end
+
+				if a_controller.axis.trigger_right = a_axis_id then
+					rectangle.rotate_right (a_timestamp)
+				end
+				if a_value = 0 then
+					rectangle.stop_rotation
+				end
+			end
+
 
 	on_button_pressed(a_timestamp:NATURAL_32; a_button_id:NATURAL_8)
 		do
