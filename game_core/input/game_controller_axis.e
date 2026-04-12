@@ -5,7 +5,7 @@ note
 	revision: "1.0"
 
 class
-	CONTROLLER_AXIS
+	GAME_CONTROLLER_AXIS
 create
 	make
 feature -- Access
