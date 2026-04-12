@@ -38,10 +38,10 @@ feature {NONE}  -- Initialization
 		end
 feature -- Access
 
-	axis:CONTROLLER_AXIS
+	axis:GAME_CONTROLLER_AXIS
 		-- axis of the controller
 
-	buttons:CONTROLLER_BUTTONS
+	buttons:GAME_CONTROLLER_BUTTONS
 		-- buttons of the controller
 
 	index:INTEGER

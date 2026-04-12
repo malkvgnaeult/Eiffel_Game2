@@ -9,6 +9,7 @@ class
 
 inherit
 	IMAGE
+	DOUBLE_MATH
 
 create
 	make
@@ -21,6 +22,8 @@ feature {NONE} -- Initialization
 			make_from_file(a_renderer,"rectangle.png")
 
 			initialize_coordinate
+
+			old_timestamp := 0
 		end
 
 	initialize_coordinate
@@ -39,62 +42,68 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	update(a_timestamp:NATURAL_32)
-			-- Update the surface depending on the present `a_timestamp'.
-			-- Each 100 ms, the image change; each 10ms `Current' is moving
-		local
-			l_coordinate:TUPLE[x,y:INTEGER]
-			l_delta_time:NATURAL_32
-		do
-				l_delta_time := a_timestamp - old_timestamp
-				if l_delta_time // movement_delta > 0 then
+update(a_timestamp: NATURAL_32)
+    local
+        l_delta_time: NATURAL_32
+        l_normalized_x, l_normalized_y, l_magnitude, l_normalized_mag: REAL_32
+        l_deadzone: REAL_32
+        l_max_value: REAL_32
+    do
+    	l_deadzone:= 5000.0
+        l_max_value:= 32767.0
+        l_delta_time := a_timestamp - old_timestamp
+        if l_delta_time // movement_delta > 0 then
 
-						if going_horizontal then
-							x := x + (x_motion_value.as_integer_32//10000)
-						end
-						if going_vertical then
-							y := y + (y_motion_value.as_integer_32//10000)
-						end
+            -- Deadzone circulaire
+            l_normalized_x := x_motion_value.to_real
+            l_normalized_y := y_motion_value.to_real
+            l_magnitude := sqrt(l_normalized_x * l_normalized_x + l_normalized_y * l_normalized_y).truncated_to_real
 
-					if rotating then
-						if rotating_right then
-							angle := angle + (l_delta_time // movement_delta).to_real_64
-						elseif rotating_left then
-							angle := angle - (l_delta_time // movement_delta).to_real_64
-						end
+            if l_magnitude >= l_deadzone then
+                l_normalized_mag := (l_magnitude - l_deadzone) / (l_max_value - l_deadzone)
+                if l_normalized_mag > 1.0 then
+                    l_normalized_mag := 1.0
+                end
 
-					end
-					old_timestamp := old_timestamp + (l_delta_time // movement_delta) * movement_delta
+                l_normalized_x := (l_normalized_x / l_magnitude) * l_normalized_mag
+                l_normalized_y := (l_normalized_y / l_magnitude) * l_normalized_mag
+				if going_horizontal then
+				  x := x + (l_normalized_x * 5.0).truncated_to_integer
 				end
+                if going_vertical then
+					y := y + (l_normalized_y * 5.0).truncated_to_integer
+                end
 
-		end
+            end
+
+            -- Rotation (inchangée)
+            if rotating then
+                if rotating_right then
+                    angle := angle + (l_delta_time // movement_delta).to_real_64
+                elseif rotating_left then
+                    angle := angle - (l_delta_time // movement_delta).to_real_64
+                end
+            end
+
+            old_timestamp := old_timestamp + (l_delta_time // movement_delta) * movement_delta
+        end
+    end
 
 	x_motion_value:INTEGER_16
 
 	go_horizontal(a_timestamp:NATURAL_32;a_value:INTEGER_16)
 			-- Make `Current' starting to move left
 		do
-			old_timestamp := a_timestamp
 			going_horizontal := true
-
 			x_motion_value := a_value
 		end
-
---	go_right(a_timestamp:NATURAL_32;a_value:INTEGER_16)
---			-- Make `Current' starting to move right
---		do
---			old_timestamp := a_timestamp
---			going_right := True
-
---			x_motion_value := a_value
---		end
 
 	y_motion_value:INTEGER_16
 
 	go_vertical(a_timestamp:NATURAL_32;a_value:INTEGER_16)
 			-- Make `Current' starting to move vertically
 		do
-			old_timestamp := a_timestamp
+	--		old_timestamp := a_timestamp
 			going_vertical := true
 
 			y_motion_value := a_value
@@ -103,7 +112,6 @@ feature -- Access
 	rotate_right(a_timestamp:NATURAL_32)
 			-- Make `Current' starting to rotate right
 		do
-			old_timestamp := a_timestamp
 			rotating_right := True
 			rotating := true
 		end
@@ -111,7 +119,6 @@ feature -- Access
 	rotate_left(a_timestamp:NATURAL_32)
 			-- Make `Current' starting to rotate left
 		do
-			old_timestamp := a_timestamp
 			rotating_left := True
 			rotating := true
 		end
@@ -201,10 +208,5 @@ feature {NONE} -- constants
 
 	movement_delta:NATURAL_32 = 10
 			-- The delta time between each movement of `Current'
-
-	animation_delta:NATURAL_32 = 100
-			-- The delta time between each animation of `Current'
-
-
 end
 

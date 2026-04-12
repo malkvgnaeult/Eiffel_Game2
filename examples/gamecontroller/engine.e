@@ -123,8 +123,6 @@ feature {NONE} -- Implementation
 				if a_axis_id = controller.item.axis.trigger_left or a_axis_id = controller.item.axis.trigger_right then
 					handle_rotation(a_timestamp,a_axis_id,a_value,controller.item)
 				end
-
-
 			end
 
 		end
@@ -146,7 +144,7 @@ feature {NONE} -- Implementation
 			elseif a_value = 0 then
 				rectangle.stop_left_y_axis
 			end
-			io.put_integer_16 (a_value)
+		--	io.put_integer_16 (a_value)
 		end
 
 		handle_rotation(a_timestamp:NATURAL_32;a_axis_id:NATURAL_8;a_value:INTEGER_16;a_controller:GAME_CONTROLLER)
