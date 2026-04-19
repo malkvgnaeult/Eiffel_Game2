@@ -49,7 +49,7 @@ update(a_timestamp: NATURAL_32)
         l_deadzone: REAL_32
         l_max_value: REAL_32
     do
-    	l_deadzone:= 5000.0
+    	l_deadzone:= 8000.0
         l_max_value:= 32767.0
         l_delta_time := a_timestamp - old_timestamp
         if l_delta_time // movement_delta > 0 then
@@ -76,14 +76,12 @@ update(a_timestamp: NATURAL_32)
 
             end
 
-            -- Rotation (inchangée)
-            if rotating then
+            -- Rotation
                 if rotating_right then
                     angle := angle + (l_delta_time // movement_delta).to_real_64
                 elseif rotating_left then
                     angle := angle - (l_delta_time // movement_delta).to_real_64
                 end
-            end
 
             old_timestamp := old_timestamp + (l_delta_time // movement_delta) * movement_delta
         end
@@ -103,9 +101,7 @@ update(a_timestamp: NATURAL_32)
 	go_vertical(a_timestamp:NATURAL_32;a_value:INTEGER_16)
 			-- Make `Current' starting to move vertically
 		do
-	--		old_timestamp := a_timestamp
 			going_vertical := true
-
 			y_motion_value := a_value
 		end
 
@@ -113,20 +109,19 @@ update(a_timestamp: NATURAL_32)
 			-- Make `Current' starting to rotate right
 		do
 			rotating_right := True
-			rotating := true
+			rotating_left := false
 		end
 
 	rotate_left(a_timestamp:NATURAL_32)
 			-- Make `Current' starting to rotate left
 		do
 			rotating_left := True
-			rotating := true
+			rotating_right := false
 		end
 
 	stop_rotation
 			-- Make `Current' stop rotating
 		do
-			rotating := false
 			rotating_right := false
 			rotating_left := false
 		end
@@ -140,9 +135,6 @@ update(a_timestamp: NATURAL_32)
 		do
 			going_vertical := false
 		end
-
-	rotating:BOOLEAN
-		-- Is 'Current' rotation
 
 	going_horizontal:BOOLEAN
 			-- Is `Current' moving horizontally

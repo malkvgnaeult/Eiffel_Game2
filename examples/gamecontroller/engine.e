@@ -124,7 +124,6 @@ feature {NONE} -- Implementation
 					handle_rotation(a_timestamp,a_axis_id,a_value,controller.item)
 				end
 			end
-
 		end
 
 		handle_left_joystick_x_motion(a_timestamp:NATURAL_32;a_value:INTEGER_16)
@@ -134,7 +133,6 @@ feature {NONE} -- Implementation
 				elseif a_value = 0 then
 					rectangle.stop_left_x_axis
 				end
-			--	io.put_integer_16 (a_value)
 			end
 
 		handle_left_joystick_y_motion(a_timestamp:NATURAL_32;a_value:INTEGER_16)
@@ -144,7 +142,6 @@ feature {NONE} -- Implementation
 			elseif a_value = 0 then
 				rectangle.stop_left_y_axis
 			end
-		--	io.put_integer_16 (a_value)
 		end
 
 		handle_rotation(a_timestamp:NATURAL_32;a_axis_id:NATURAL_8;a_value:INTEGER_16;a_controller:GAME_CONTROLLER)
@@ -156,7 +153,7 @@ feature {NONE} -- Implementation
 				if a_controller.axis.trigger_right = a_axis_id then
 					rectangle.rotate_right (a_timestamp)
 				end
-				if a_value = 0 then
+				if a_value < 20 then
 					rectangle.stop_rotation
 				end
 			end
@@ -167,6 +164,7 @@ feature {NONE} -- Implementation
 		local
 			l_controller:GAME_CONTROLLER
 		do
+			io.put_string(a_button_id.out + " ; ")
 			l_controller := controllers.first--assume qu'il y a seulement une manette
 			if l_controller.buttons.north = a_button_id then
 				--orange
@@ -182,6 +180,7 @@ feature {NONE} -- Implementation
 				green:=0
 				blue:=0
 			elseif l_controller.buttons.south = a_button_id then
+				--vert
 				red := 35
 				green:=170
 				blue:=35

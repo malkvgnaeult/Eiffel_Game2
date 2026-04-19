@@ -14,35 +14,35 @@ feature -- Access
 	make
 	-- Initalization of 'Current'
 		do
-			south:=0
+			dpad_up:=0
 
-			east:=1
+			dpad_down:=1
 
-			west:=2
+			dpad_left:=2
 
-			north:=3
+			dpad_right:=3
 
-			back:=4
+			start:=4
 
-			guide:=5
+			back:=5
 
-			start:=6
+			left_stick:=6
 
-			left_stick:=7
+			right_stick:=7
 
-			right_stick:=8
+			left_shoulder:=8
 
-			left_shoulder:=9
+			right_shoulder:=9
 
-			right_shoulder:=10
+			south:=10
 
-			dpad_up:=11
+			east:=11
 
-			dpad_down:=12
+			west:=12
 
-			dpad_left:=13
+			north:=13
 
-			dpad_right:=14
+			guide:=14
 --les boutons suivants n'ont pas été testés, car ils ne sont pas sur ma manette
 			misc1:=15
 
