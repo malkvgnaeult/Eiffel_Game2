@@ -44,7 +44,7 @@ feature -- Access
 			end
 
 		end
-		
+
 	name:STRING
 		-- return the gamepad name
 			local
@@ -79,12 +79,13 @@ feature -- Access
 			create l_mapping_string.make (guid+","+name+","+a_button_layout)
 			mapping_success:={GAME_SDL_EXTERNAL}.sdl_gamecontrolleraddmapping (l_mapping_string.item)
 		ensure
-			remapping_success: (mapping_success = 1)
+			remapping_success: not (mapping_success = -1)
 		end
 
 	mapping_success:INTEGER
-
+		-- Returns 1 if a new mapping is added, 0 if an existing mapping is updated, -1 on error
 	joystick:POINTER
+		-- The pointer of the joystick ID of the controller
 		do
 			Result := {GAME_SDL_EXTERNAL}.sdl_gamecontrollergetjoystick (item)
 		end
