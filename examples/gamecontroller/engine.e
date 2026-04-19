@@ -161,30 +161,29 @@ feature {NONE} -- Implementation
 
 	on_button_pressed(a_timestamp:NATURAL_32; a_button_id:NATURAL_8)
 				-- Event that is launch at each button press
-		local
-			l_controller:GAME_CONTROLLER
 		do
-			io.put_string(a_button_id.out + " ; ")
-			l_controller := controllers.first--assume qu'il y a seulement une manette
-			if l_controller.buttons.north = a_button_id then
+		across controllers as controller loop
+
+			if controller.item.buttons.north = a_button_id then
 				--orange
 				red := 255
 				green:=165
 				blue:=50
-			elseif l_controller.buttons.west = a_button_id then
+			elseif controller.item.buttons.west = a_button_id then
 				red := 0
 				green:=0
 				blue:=255
-			elseif l_controller.buttons.east = a_button_id then
+			elseif controller.item.buttons.east = a_button_id then
 				red :=255
 				green:=0
 				blue:=0
-			elseif l_controller.buttons.south = a_button_id then
+			elseif controller.item.buttons.south = a_button_id then
 				--vert
 				red := 35
 				green:=170
 				blue:=35
 			end
+		end
 		end
 
 	on_quit(a_timestamp: NATURAL_32)
