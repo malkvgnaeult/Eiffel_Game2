@@ -7,16 +7,9 @@ note
 class
 	GAME_CONTROLLER
 inherit
-	DISPOSABLE
-	GAME_LIBRARY_SHARED
-	GAME_CONTROLLER_EVENTS
-		rename
-			make as make_events,
-			id as index,
-			stop as stop_events,
-			run as run_events,
-			is_running as is_events_running,
-			clear as clear_events
+	GAME_DEVICE_COMMON
+		redefine
+			make
 		end
 
 create
@@ -30,10 +23,7 @@ feature {NONE}  -- Initialization
 			create axis.make
 			create buttons.make
 			joystick_id := a_joystick_id
-			open_index := a_joystick_id
-			events_controller := game_library.events_controller
-			is_removed := false
-			make_events
+			precursor (a_joystick_id)
 
 		end
 feature -- Access
@@ -45,22 +35,18 @@ feature -- Access
 		-- buttons of the controller
 
 	index:INTEGER
-		-- Internal unique identifier of 'Current'
+			-- Internal unique identifier of `Current'
 		do
 			if is_open then
-				Result :=cached_instance_id
+				Result:=cached_instance_id
 			else
 				Result := -1
 			end
+
 		end
-
-	is_removed:BOOLEAN
-		-- 'Current' has been removed
-
+		
 	name:STRING
 		-- return the gamepad name
-		require
-				Not_Removed: not is_removed
 			local
 				l_text_return:C_STRING
 			do
@@ -72,33 +58,8 @@ feature -- Access
 				Result:=l_text_return.string
 			end
 
-	guid:READABLE_STRING_GENERAL
-			-- A unique hardware identifier of `Current'
-		require
-			Not_Removed: not is_removed
-		local
-			l_string_buffer:POINTER
-			l_c_string:C_STRING
-		do
-			check joystick /= joystick.default_pointer end
-			l_string_buffer := l_string_buffer.memory_alloc (50)
-			if is_open then
-				{GAME_SDL_EXTERNAL}.c_SDL_JoystickGetGUIDString(joystick, l_string_buffer, 50)
-			else
-				{GAME_SDL_EXTERNAL}.c_SDL_JoystickGetDeviceGUIDString(open_index, l_string_buffer, 50)
-			end
-			 create l_c_string.make_by_pointer (l_string_buffer)
- 		   print("GUID: " + l_c_string.string + "%N")
-  			  Result := l_c_string.string
-			Result := (create {C_STRING}.make_by_pointer (l_string_buffer)).string
-		end
-
-
-
 	open
 			-- Open `Current' (Allocate internal structure).
-		require
-			Open_Gamepad_Not_Open:not is_open
 		do
 			clear_error
 			item := {GAME_SDL_EXTERNAL}.sdl_gamecontrolleropen(open_index)
@@ -106,21 +67,26 @@ feature -- Access
 			if is_open then
                 cached_instance_id := {GAME_SDL_EXTERNAL}.SDL_JoystickInstanceID(joystick)
             end
-		ensure
-			Is_Open_Or_Error: not has_error implies is_open
 		end
+
+	remap(a_button_layout:STRING)
+		-- remap the controller button layout
+		-- the mapping string is the guid, the name, and the new button layout
+		-- mapping string example: "341a3608000000000000504944564944,Afterglow PS3 Controller,a:b1,b:b2,y:b3,x:b0,start:b9,guide:b12,back:b8,dpup:h0.1,dpleft:h0.8,dpdown:h0.4,dpright:h0.2,leftshoulder:b4,rightshoulder:b5,leftstick:b10,rightstick:b11,leftx:a0,lefty:a1,rightx:a2,righty:a3,lefttrigger:b6,righttrigger:b7"
+		local
+			l_mapping_string:C_STRING
+		do
+			create l_mapping_string.make (guid+","+name+","+a_button_layout)
+			mapping_success:={GAME_SDL_EXTERNAL}.sdl_gamecontrolleraddmapping (l_mapping_string.item)
+		ensure
+			remapping_success: (mapping_success = 1)
+		end
+
+	mapping_success:INTEGER
 
 	joystick:POINTER
 		do
 			Result := {GAME_SDL_EXTERNAL}.sdl_gamecontrollergetjoystick (item)
-		end
-
-	close
-			-- Close `Current' (Free internal structure).
-	--	require
-	--		Close_Is_Open: is_open
-		do
-			internal_close
 		end
 
 	is_open:BOOLEAN
@@ -132,9 +98,6 @@ feature -- Access
 	is_button_pressed(a_button_id:INTEGER_32):BOOLEAN
 			-- True if the button identified by 'a_button_id' is pressed, False otherwise
 			-- Note that 'a_button_id' index start at 0
-		require
-			Is_Buttons_Pressed_Opened: is_open
-			Not_Removed: not is_removed
 		do
 			Result := {GAME_SDL_EXTERNAL}.sdl_gamecontrollergetbutton (item, a_button_id)
 		end
@@ -148,41 +111,10 @@ feature -- Access
 	cached_instance_id: INTEGER_32
         -- Instance ID mis en cache lors du open, reste valide après déconnexion
 
-	events_controller:GAME_EVENTS_CONTROLLER
-			-- Used main event manager
-
 	joystick_id: INTEGER_32
 				-- joystick identifier of the gamepad
 
-feature  {NONE} -- Implementation
-
-
-	dispose
-			-- <Pecursor>
-	do
-		if not item.is_default_pointer then
-			{GAME_SDL_EXTERNAL}.sdl_gamecontrollerclose (item)
-		end
-	end
-
-feature --{GAME_SDL_ANY} -- Implementation
-
-	item:POINTER
-			-- Point to the internal C structure of `Current'
-
 feature {GAME_LIBRARY_CONTROLLER}  -- Implementation
-
-
-	open_index:INTEGER assign set_open_index
-		-- The internal 'index' used by 'open'
-
-	set_open_index(a_index:INTEGER)
-			-- Assign 'a_index' to 'open_index'
-		do
-			open_index := a_index
-		ensure
-			Is_Assign: open_index = a_index
-		end
 
 	internal_close
 			-- Close `Current' (Free internal structure).
@@ -191,13 +123,4 @@ feature {GAME_LIBRARY_CONTROLLER}  -- Implementation
 			{GAME_SDL_EXTERNAL}.sdl_gamecontrollerclose(item)
 			create item
 		end
-
-	remove
-			-- set 'is_removed' to 'True'
-		do
-			is_removed := true
-		ensure
-			Is_Removed_Set: is_removed
-		end
-
 end
