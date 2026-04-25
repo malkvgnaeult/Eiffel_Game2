@@ -159,7 +159,7 @@ feature -- Access
 			end
 		end
 
-	controller_found_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; controller:GAME_CONTROLLER]]
+	controller_found_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; controller:GAME_GAMEPAD]]
 			-- Called when a new `controller' has been found
 			-- Automatically added to {GAME_LIBRARY_CONTROLLER}.`controllers'
 		require
@@ -176,7 +176,7 @@ feature -- Access
 			end
 		end
 
-	controller_remove_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; controller:GAME_CONTROLLER]]
+	controller_remove_actions: ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; controller:GAME_GAMEPAD]]
 			-- Called when a new controller has been removed
 			-- The controller will be removed from {GAME_LIBRARY_CONTROLLER}.`controllers' after the
 			-- calls of this feature.
@@ -257,13 +257,13 @@ feature {NONE} -- Implementation
 	joystick_removed_actions_callback:PROCEDURE [ANY, TUPLE[timestamp:NATURAL_32;joystick_id:INTEGER_32]]
 			-- Internal callback of the joystick removed event
 
-	controller_found_actions_internal: detachable ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; controller:GAME_CONTROLLER]]
+	controller_found_actions_internal: detachable ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; controller:GAME_GAMEPAD]]
 			-- Internal representation of the controller founded event
 
 	controller_founded_actions_callback:PROCEDURE [ANY, TUPLE[timestamp:NATURAL_32;controller_id:INTEGER_32]]
 			-- Internal callback of the controller founded event
 
-	controller_remove_actions_internal: detachable ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; controller:GAME_CONTROLLER]]
+	controller_remove_actions_internal: detachable ACTION_SEQUENCE[TUPLE[timestamp:NATURAL_32; controller:GAME_GAMEPAD]]
 			-- Internal representation of the controller removed event
 
 	controller_removed_actions_callback:PROCEDURE [ANY, TUPLE[timestamp:NATURAL_32;controller_id:INTEGER_32]]
