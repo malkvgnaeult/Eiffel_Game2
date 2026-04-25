@@ -217,7 +217,7 @@ feature -- Subs Systems
 	findController
 			--Finds controller
 		local
-			l_controller: GAME_CONTROLLER
+			l_controller: GAME_GAMEPAD
 			i: INTEGER_32
 		do
 			from
@@ -646,12 +646,12 @@ feature {NONE} -- Joystick implementation
 		end
 
 feature -- controller methods
-	controllers:CHAIN_INDEXABLE_ITERATOR[GAME_CONTROLLER]
+	controllers:CHAIN_INDEXABLE_ITERATOR[GAME_GAMEPAD]
 			-- Every {GAME_CONTROLLER} detected by `Current'
 		require
 			controllers_is_controller_Enabled: is_controller_enable
 		local
-			l_controllers:LINKED_LIST[GAME_CONTROLLER]
+			l_controllers:LINKED_LIST[GAME_GAMEPAD]
 		do
 			create l_controllers.make
 			across internal_controllers as la_controllers loop
@@ -673,7 +673,7 @@ feature -- controller methods
 
 feature --{NONE} -- controller Implementations
 
-	internal_controllers:ARRAYED_LIST[detachable GAME_CONTROLLER]
+	internal_controllers:ARRAYED_LIST[detachable GAME_GAMEPAD]
 			-- Every {GAME_CONTROLLER} connected to the system.
 
 	open_all_controller
@@ -681,7 +681,7 @@ feature --{NONE} -- controller Implementations
 		require
 			controllers_is_enabled: is_controller_enable
 		do
-			internal_controllers.do_all (agent (a_controller:detachable GAME_CONTROLLER) do
+			internal_controllers.do_all (agent (a_controller:detachable GAME_GAMEPAD) do
 								if attached a_controller as la_controller and then not la_controller.is_open then
 									la_controller.open
 								end
@@ -695,7 +695,7 @@ feature --{NONE} -- controller Implementations
 		Controller_Close_All_controllers_Joystick_Enabled: is_controller_enable
 		Close_All_controller_Attach: internal_controllers /= Void
 	do
-		internal_controllers.do_all (agent (a_controller:detachable GAME_CONTROLLER) do
+		internal_controllers.do_all (agent (a_controller:detachable GAME_GAMEPAD) do
 								if attached a_controller as la_controller and then la_controller.is_open then
 									la_controller.close
 								end
@@ -705,7 +705,7 @@ feature --{NONE} -- controller Implementations
 	manage_controller_founded_callback(a_timestamp:NATURAL_32; a_joystick_id:INTEGER_32)
 			-- {Precursor}
 		local
-			l_controller:GAME_CONTROLLER
+			l_controller:GAME_GAMEPAD
 		do
 			across internal_controllers as la_controllers loop
 				if attached la_controllers.item as la_controller and then la_controller.open_index ~ a_joystick_id then
@@ -723,7 +723,7 @@ feature --{NONE} -- controller Implementations
 			-- {Precursor}
 		local
 			l_index:INTEGER
-			l_cursor:ARRAYED_LIST_ITERATION_CURSOR [detachable GAME_CONTROLLER]
+			l_cursor:ARRAYED_LIST_ITERATION_CURSOR [detachable GAME_GAMEPAD]
 			l_found:BOOLEAN
 		do
 

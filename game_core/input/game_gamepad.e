@@ -5,7 +5,7 @@ note
 	revision: "1.0"
 
 class
-	GAME_CONTROLLER
+	GAME_GAMEPAD
 inherit
 	GAME_DEVICE_COMMON
 		redefine
@@ -28,12 +28,6 @@ feature {NONE}  -- Initialization
 		end
 feature -- Access
 
-	axis:GAME_CONTROLLER_AXIS
-		-- axis of the controller
-
-	buttons:GAME_CONTROLLER_BUTTONS
-		-- buttons of the controller
-
 	index:INTEGER
 			-- Internal unique identifier of `Current'
 		do
@@ -44,6 +38,13 @@ feature -- Access
 			end
 
 		end
+
+	axis:GAME_GAMEPAD_AXIS
+		-- axis of the controller
+
+	buttons:GAME_GAMEPAD_BUTTONS
+		-- buttons of the controller
+
 
 	name:STRING
 		-- return the gamepad name

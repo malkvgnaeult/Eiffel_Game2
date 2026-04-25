@@ -5,7 +5,7 @@ note
 	revision: "1.0"
 
 class
-	GAME_CONTROLLER_BUTTONS
+	GAME_GAMEPAD_BUTTONS
 create
 	make
 
