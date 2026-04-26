@@ -24,6 +24,8 @@ feature {NONE} -- Initialization
 			initialize_coordinate
 
 			old_timestamp := 0
+			rotation_deadzone:=20
+			mouvement_deadzone:=8000.0
 		end
 
 	initialize_coordinate
@@ -49,7 +51,7 @@ update(a_timestamp: NATURAL_32)
         l_deadzone: REAL_32
         l_max_value: REAL_32
     do
-    	l_deadzone:= 8000.0
+    	l_deadzone:= mouvement_deadzone
         l_max_value:= 32767.0
         l_delta_time := a_timestamp - old_timestamp
         if l_delta_time // movement_delta > 0 then
@@ -189,6 +191,10 @@ update(a_timestamp: NATURAL_32)
 	x_rotation_center:INTEGER
 
 	y_rotation_center:INTEGER
+
+	rotation_deadzone:INTEGER_16
+
+	mouvement_deadzone:REAL_32
 
 feature {NONE} -- implementation
 

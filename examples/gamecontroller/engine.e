@@ -142,7 +142,7 @@ feature {NONE} -- Implementation
 				if a_controller.axis.trigger_right = a_axis_id then
 					rectangle.rotate_right (a_timestamp)
 				end
-				if a_value < 20 then
+				if a_value < rectangle.rotation_deadzone.to_natural_8 then
 					rectangle.stop_rotation
 				end
 			end
