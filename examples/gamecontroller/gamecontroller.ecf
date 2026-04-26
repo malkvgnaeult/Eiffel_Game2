@@ -14,7 +14,12 @@
         <cluster name="gamecontroller" location=".\" recursive="true">
             <file_rule>
                 <exclude>/EIFGENs$</exclude>
+				<exclude>/tests$</exclude>
             </file_rule>
         </cluster>
     </target>
+		<target name="gamecontroller_tests" extends="gamecontroller">
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
+		<tests name="tests" location=".\tests\"/>
+	</target>
 </system>

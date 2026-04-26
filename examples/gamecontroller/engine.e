@@ -20,6 +20,7 @@ feature {NONE} -- Initialization
 		local
 			l_window_builder:GAME_WINDOW_RENDERED_BUILDER
 		do
+		--	game_library.enable_video
 			create l_window_builder
 			l_window_builder.set_dimension (1024, 512)
 			l_window_builder.set_title ("Example Controller")
@@ -66,11 +67,11 @@ feature -- Access
 
 	rectangle:RECTANGLE
 			-- The main rectangle of the game
-	controllers: ARRAYED_LIST[GAME_CONTROLLER]
+	controllers: ARRAYED_LIST[GAME_GAMEPAD]
 
 feature {NONE} -- Implementation
 
-	on_controller_found(timestamp:NATURAL_32; controller:GAME_CONTROLLER)
+	on_controller_found(timestamp:NATURAL_32; controller:GAME_GAMEPAD)
 			-- Event that is launch at each controller found
 		do
 			controller.open
@@ -80,7 +81,7 @@ feature {NONE} -- Implementation
 			controllers.extend (controller)
 		end
 
-	on_controller_removed(timestamp:NATURAL_32; controller:GAME_CONTROLLER)
+	on_controller_removed(timestamp:NATURAL_32; controller:GAME_GAMEPAD)
 				-- Event that is launch at each controller removed
 		do
 			controllers.remove
@@ -88,8 +89,6 @@ feature {NONE} -- Implementation
 
 	on_iteration(a_timestamp:NATURAL_32)
 			-- Event that is launch at each iteration.
-			local
-				points:ARRAYED_LIST[TUPLE[x,y:INTEGER]]
 		do
 			rectangle.update (a_timestamp)
 			-- Draw the scene
@@ -112,17 +111,7 @@ feature {NONE} -- Implementation
 			-- Event that is launch at each motion of an axis
 		do
 			across controllers as controller loop
-				if (controller.item.axis.left_x = a_axis_id) then
-					handle_left_joystick_x_motion(a_timestamp,a_value)
-				end
-
-				if (controller.item.axis.left_y = a_axis_id) then
-					handle_left_joystick_y_motion(a_timestamp,a_value)
-				end
-
-				if a_axis_id = controller.item.axis.trigger_left or a_axis_id = controller.item.axis.trigger_right then
-					handle_rotation(a_timestamp,a_axis_id,a_value,controller.item)
-				end
+				handle_axis_motion(a_timestamp,a_axis_id,a_value,controller.item)
 			end
 		end
 
@@ -144,7 +133,7 @@ feature {NONE} -- Implementation
 			end
 		end
 
-		handle_rotation(a_timestamp:NATURAL_32;a_axis_id:NATURAL_8;a_value:INTEGER_16;a_controller:GAME_CONTROLLER)
+		handle_rotation(a_timestamp:NATURAL_32;a_axis_id:NATURAL_8;a_value:INTEGER_16;a_controller:GAME_GAMEPAD)
 			do
 				if a_controller.axis.trigger_left = a_axis_id then
 					rectangle.rotate_left (a_timestamp)
@@ -162,29 +151,11 @@ feature {NONE} -- Implementation
 	on_button_pressed(a_timestamp:NATURAL_32; a_button_id:NATURAL_8)
 				-- Event that is launch at each button press
 		do
-		across controllers as controller loop
-
-			if controller.item.buttons.north = a_button_id then
-				--orange
-				red := 255
-				green:=165
-				blue:=50
-			elseif controller.item.buttons.west = a_button_id then
-				red := 0
-				green:=0
-				blue:=255
-			elseif controller.item.buttons.east = a_button_id then
-				red :=255
-				green:=0
-				blue:=0
-			elseif controller.item.buttons.south = a_button_id then
-				--vert
-				red := 35
-				green:=170
-				blue:=35
+			across controllers as controller loop
+				handle_button_press(a_timestamp, a_button_id, controller.item)
 			end
 		end
-		end
+
 
 	on_quit(a_timestamp: NATURAL_32)
 			-- This method is called when the quit signal is send to the application (ex: window X button pressed).
@@ -192,7 +163,54 @@ feature {NONE} -- Implementation
 			game_library.stop  -- Stop the controller loop (allow game_library.launch to return)
 		end
 
+
+
+feature--access
+
 	red:NATURAL_8
 	green:NATURAL_8
 	blue:NATURAL_8
+
+	handle_axis_motion(a_timestamp:NATURAL_32;a_axis_id:NATURAL_8;a_value:INTEGER_16;a_controller:GAME_GAMEPAD)
+	-- handles the motion of axis
+	do
+		if (a_controller.axis.left_x = a_axis_id) then
+			handle_left_joystick_x_motion(a_timestamp,a_value)
+		end
+
+		if (a_controller.axis.left_y = a_axis_id) then
+			handle_left_joystick_y_motion(a_timestamp,a_value)
+		end
+
+		if a_axis_id = a_controller.axis.trigger_left or a_axis_id = a_controller.axis.trigger_right then
+			handle_rotation(a_timestamp,a_axis_id,a_value,a_controller)
+		end
+	end
+
+	handle_button_press(a_timestamp:NATURAL_32; a_button_id:NATURAL_8;a_controller:GAME_GAMEPAD)
+	-- handles button presses
+	do
+		if a_controller.buttons.north = a_button_id then
+			--orange
+			red := 255
+			green:=165
+			blue:=50
+		elseif a_controller.buttons.west = a_button_id then
+			red := 0
+			green:=0
+			blue:=255
+		elseif a_controller.buttons.east = a_button_id then
+			red :=255
+			green:=0
+			blue:=0
+		elseif a_controller.buttons.south = a_button_id then
+			--vert
+			red := 35
+			green:=170
+			blue:=35
+		end
+	end
+
+
+
 end
