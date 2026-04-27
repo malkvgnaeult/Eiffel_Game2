@@ -22,4 +22,14 @@ feature -- Exposition pour les tests
        do
        	on_iteration(a_timestamp)
        end
+
+      simuler_ajout_manette(a_timestamp: NATURAL_32; a_controller:GAME_GAMEPAD)
+      do
+      	on_controller_found (a_timestamp, a_controller)
+      end
+
+      simuler_retrait_manette(a_timestamp: NATURAL_32; a_controller:GAME_GAMEPAD)
+      do
+      	on_controller_removed (a_timestamp, a_controller)
+      end
 end

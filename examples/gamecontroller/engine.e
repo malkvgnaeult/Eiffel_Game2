@@ -79,12 +79,13 @@ feature {NONE} -- Implementation
 		--	controller.button_released_actions.extend (agent on_button_released)
 			controller.axis_motion_actions.extend (agent on_axis_motion)
 			controllers.extend (controller)
+			print(controllers.count)
 		end
 
 	on_controller_removed(timestamp:NATURAL_32; controller:GAME_GAMEPAD)
 				-- Event that is launch at each controller removed
 		do
-			controllers.remove
+			controllers.prune (controller)
 		end
 
 	on_iteration(a_timestamp:NATURAL_32)

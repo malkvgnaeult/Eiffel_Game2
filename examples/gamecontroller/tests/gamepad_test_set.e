@@ -95,7 +95,7 @@ feature -- Test routines
 			l_left_joystick_x:=controllers.first.axis.left_x
 			l_left_joystick_y:=controllers.first.axis.left_y
 			--à cause de la façon dont la deadzone circulaire est calculé, la 'véritable' ressemble plutôt
-			--à la variable+4954.
+			--à environ la variable+5000.
 			l_value:=(engine.rectangle.mouvement_deadzone+5000).truncated_to_integer.as_integer_16
 			assert("position x de départ du rectangle",engine.rectangle.x = 0)
 			assert("position y de départ du rectangle",engine.rectangle.y = 0)
@@ -216,6 +216,32 @@ feature -- Test routines
 			engine.rectangle.update (65)
 			assert("position x de déplacement du rectangle",engine.rectangle.x = l_position_depart_x)
 			assert("position y de déplacement du rectangle",engine.rectangle.y = l_position_depart_y)
+		end
+
+	ajout_manette_test
+		local
+			l_manette:GAME_GAMEPAD
+			l_nbr_manettes_depart:INTEGER
+		do
+			create l_manette.make (0)
+
+			l_nbr_manettes_depart:=engine.controllers.count
+			engine.simuler_ajout_manette (50, l_manette)
+
+			assert("La manette doit être ajouter à la liste",engine.controllers.count = l_nbr_manettes_depart+1)
+		end
+
+	retraite_manette_test
+		local
+			l_manette:GAME_GAMEPAD
+			l_nbr_manettes_depart:INTEGER
+		do
+			create l_manette.make (0)
+			engine.simuler_ajout_manette (50, l_manette)
+			l_nbr_manettes_depart:=engine.controllers.count
+			engine.simuler_retrait_manette (50, l_manette)
+
+			assert("La manette doit être retirée de la liste",engine.controllers.count = l_nbr_manettes_depart-1)
 		end
 
 feature {NONE}--access
