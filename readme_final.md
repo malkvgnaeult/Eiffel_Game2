@@ -120,7 +120,6 @@ Puisque je ne peux pas directement tester le code dans la librairie de manette d
 Les tests eux-même n'ont pas été trop difficiles à faire. Il y a eu quelques embûches, mais rien qui n'est pas attendu lorsque l'on fait des tests unitaires. J'ai donc fait des tests pour chaque simulation d'événement soit appuyer sur un bouton, déplacer le rectangle avec le joystick et rotationner le rectangle avec les boutons 'triggers' ainsi que la connexion d'une manette et sa déconnexion. J'ai également les deadzones des 'axis' et un cas invalide de bouton.
 
  Cela couvre quand même tout mon code d'une certaine façon puisque sans tout le code produit dans les autres classes de la libraire 'game_core', les manettes de jeux ne fonctionneraient pas dans la classe 'Engine'. 
-### Mode d'emploi
 # Tester le projet
 Voici comment tester le projet 'gamecontrollers':
 
@@ -129,18 +128,19 @@ Voici comment tester le projet 'gamecontrollers':
 3. Double-cliquez sur 'gamecontroller.ecf'.
 4. Cette fenêtre devrait s'ouvrir:
 
-![alt text](image.png)
+<img width="273" height="303" alt="image" src="https://github.com/user-attachments/assets/893450d9-640d-45e6-a481-2b0151291bed" />
 
 Vous devez sélectionner 'gamecontroller_tests'.
 
 5. De cette façon, vous devriez avoir le dossier 'tests' dans l'onglet 'Groups'.
 
-![alt text](image-1.png)
+<img width="519" height="852" alt="image" src="https://github.com/user-attachments/assets/8f9dba3b-8753-42bf-b6bb-dd5c6013d833" />
 
 Vous pouvez voir les tests en cliquant sur 'GAMEPAD_TEST_SET'.
 
 6. Pour exécuter les tests, vous devez aller dans l'onglet 'AutoTest' que vous voyez en bas. Vous pourrez sélectionnez les tests que vous voulez exécuter et appuyez sur la flèche verte pour lancer les tests.
-![alt text](image-2.png)
+
+<img width="520" height="364" alt="image" src="https://github.com/user-attachments/assets/9b407132-fd84-41a3-984e-ba8c1bc5f019" />
 
 
 
